@@ -1,52 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:orientation="vertical">
 
     <Button
         android:id="@+id/button_back"
         style="@style/BackButton"
         android:text="@string/settings"
-        app:drawableLeftCompat="@drawable/arrow_left"/>
+        app:drawableLeftCompat="@drawable/arrow_left" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:padding="21sp">
+
         <TextView
             android:layout_width="0sp"
-            android:layout_weight="1"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:text="@string/dark_theme"
-            android:textSize="20sp"
-            android:textColor="@color/black"/>
+            android:textColor="@color/black"
+            android:textSize="16sp"
+            android:fontFamily="@font/ys_display_medium"/>
+
         <Switch
             android:layout_width="50sp"
             android:layout_height="match_parent"
-            android:thumbTint="#AEAFB4"
-            android:trackTint="#E6E8EB"
-            tools:ignore="UseSwitchCompatOrMaterialXml"/>
+            android:thumbTint="@color/yp_text_gray"
+            android:trackTint="@color/yp_light_gray"
+            tools:ignore="UseSwitchCompatOrMaterialXml" />
     </LinearLayout>
+
     <Button
         style="@style/SettingsButtons"
         android:text="@string/share"
-        app:drawableRightCompat="@drawable/share"/>
+        app:drawableRightCompat="@drawable/share" />
 
     <Button
         style="@style/SettingsButtons"
         android:text="@string/support"
-        app:drawableRightCompat="@drawable/support"/>
+        app:drawableRightCompat="@drawable/support" />
 
     <Button
         style="@style/SettingsButtons"
         android:text="@string/userDocument"
-        app:drawableRightCompat="@drawable/arrowforward"/>
-
-
+        app:drawableRightCompat="@drawable/arrowforward" />
 
 
 </LinearLayout>
