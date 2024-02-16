@@ -13,16 +13,14 @@
         <item name="iconTint">@color/black</item>
         <item name="iconSize">19sp</item>
         <item name="iconPadding">10sp</item>
-
-
     </style>
+
     <style name="textMainStyle">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginBottom">20sp</item>
         <item name="android:textColor">@color/white</item>
         <item name="android:textSize">22sp</item>
-
     </style>
 
     <style name="SettingsButtons">
@@ -30,13 +28,13 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:paddingTop">21dp</item>
         <item name="android:paddingBottom">21dp</item>
-        <item name="android:backgroundTint">@color/white</item>
-        <item name="android:textColor">@color/black</item>
+        <item name="android:backgroundTint">@color/yp_black</item>
+        <item name="android:textColor">@color/white</item>
         <item name="android:gravity">start</item>
         <item name="android:textSize">16sp</item>
         <item name="android:textAllCaps">false</item>
         <item name="android:fontFamily">@font/ys_display_medium</item>
-
+        <item name="drawableTint">@color/white</item>
     </style>
 
     <style name="BackButton">
@@ -44,17 +42,32 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:paddingTop">14dp</item>
         <item name="android:paddingBottom">21dp</item>
-        <item name="android:backgroundTint">@color/white</item>
-        <item name="android:textColor">@color/black</item>
+        <item name="android:backgroundTint">@color/yp_black</item>
+        <item name="android:textColor">@color/white</item>
         <item name="android:textSize">22sp</item>
         <item name="android:textAllCaps">false</item>
         <item name="android:fontFamily">@font/ys_display_medium</item>
         <item name="android:gravity">start</item>
-
-
-
-
+        <item name="drawableTint">@color/white</item>
     </style>
+
+    <style name="TextSettingsStyle">
+        <item name="android:layout_width">0sp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:fontFamily">@font/ys_display_medium</item>
+    </style>
+
+    <style name="SwitchStyle">
+        <item name="android:layout_width">48dp</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:thumbTint">@color/yp_blue</item>
+        <item name="android:trackTint">@color/yp_blue_light</item>
+    </style>
+
+
 
 
 </resources>
