@@ -29,16 +29,19 @@
     </LinearLayout>
 
     <Button
+        android:id="@+id/shareButton"
         style="@style/SettingsButtons"
         android:text="@string/share"
         app:drawableRightCompat="@drawable/share" />
 
     <Button
+        android:id="@+id/supportButton"
         style="@style/SettingsButtons"
         android:text="@string/support"
         app:drawableRightCompat="@drawable/support" />
 
     <Button
+        android:id="@+id/agreeButton"
         style="@style/SettingsButtons"
         android:text="@string/userDocument"
         app:drawableRightCompat="@drawable/arrowforward" />
