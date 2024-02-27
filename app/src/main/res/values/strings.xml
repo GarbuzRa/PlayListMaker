@@ -9,9 +9,4 @@
     <string name="userDocument">Пользовательское соглашение</string>
     <string name="settings">Настройки</string>
     <string name="dark_theme">Темная тема</string>
-    <string name="YPurl" translatable="false">https://practicum.yandex.ru/</string>
-    <string name="mailto_mymail" translatable="false">mailto:corpseofpig@mail.ru</string>
-    <string name="support_subject" translatable="false">Сообщение разработчикам и разработчицам приложения Playlist Maker</string>
-    <string name="support_text" translatable="false">Спасибо разработчикам и разработчицам за крутое приложение!</string>
-    <string name="offer_uri" translatable="false">https://yandex.ru/legal/practicum_offer/</string>
 </resources>
