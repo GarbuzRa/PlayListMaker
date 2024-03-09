@@ -1,47 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="?attr/colorPrimaryVariant">
+    android:layout_height="match_parent">
 
-    <Button
-        android:id="@+id/button_back"
-        style="@style/BackButton"
-        android:text="@string/settings"
-        app:drawableLeftCompat="@drawable/arrow_left" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="21dp">
-
-        <TextView
-            style="@style/TextSettingsStyle"
-            android:text="@string/dark_theme" />
-
-        <Switch
-            style="@style/SwitchStyle"
-            tools:ignore="UseSwitchCompatOrMaterialXml" />
-    </LinearLayout>
-
-    <Button
-        style="@style/SettingsButtons"
-        android:text="@string/share"
-        app:drawableRightCompat="@drawable/share" />
-
-    <Button
-        style="@style/SettingsButtons"
-        android:text="@string/support"
-        app:drawableRightCompat="@drawable/support" />
-
-    <Button
-        style="@style/SettingsButtons"
-        android:text="@string/userDocument"
-        app:drawableRightCompat="@drawable/arrowforward" />
-
-
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
