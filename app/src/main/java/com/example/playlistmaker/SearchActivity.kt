@@ -12,6 +12,7 @@ import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 
 class SearchActivity : AppCompatActivity() {
+    lateinit var editText: EditText
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
@@ -19,7 +20,7 @@ class SearchActivity : AppCompatActivity() {
         searchBackButton.setOnClickListener{
             finish()
         }
-        val trackSearch = findViewById<EditText>(R.id.track_search)
+        editText = findViewById<EditText>(R.id.track_search)
         val clearButton = findViewById<ImageView>(R.id.clear_text)
 
         val myTextWatcher = object : TextWatcher{
@@ -37,23 +38,21 @@ class SearchActivity : AppCompatActivity() {
 
             }
         }
-        trackSearch.addTextChangedListener(myTextWatcher)
+        editText.addTextChangedListener(myTextWatcher)
         clearButton.setOnClickListener{
-            trackSearch.setText("")
+            editText.setText("")
             keyboardHide()
         }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        val editText = findViewById<EditText>(R.id.track_search)
         outState.putString("SAVED_TEXT", editText.text.toString())
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
         val savedText = savedInstanceState.getString("SAVED_TEXT", "")
-        val editText = findViewById<EditText>(R.id.track_search)
         editText.setText(savedText)
 
     }
