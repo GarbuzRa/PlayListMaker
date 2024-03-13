@@ -17,11 +17,11 @@
 
         <Button
             android:id="@+id/search_back_button"
+            style="@style/SearchBackButtonStyle"
             android:layout_width="48dp"
             android:layout_height="match_parent"
-            app:icon="@drawable/arrow_left"
-            style="@style/SearchBackButtonStyle"
-            android:paddingLeft="@dimen/std_padding_16"/>
+            android:paddingLeft="@dimen/std_padding_16"
+            app:icon="@drawable/arrow_left" />
 
         <TextView
             android:layout_width="wrap_content"
