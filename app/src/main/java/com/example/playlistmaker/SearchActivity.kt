@@ -10,15 +10,17 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
 class SearchActivity : AppCompatActivity() {
     lateinit var editText: EditText
     var trackList = mutableListOf<Track>()
-    val trackRecycler = findViewById<RecyclerView>(R.id.track_recycler)
+    lateinit var trackRecycler: RecyclerView
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
+        trackRecycler = findViewById(R.id.track_recycler)
         val searchBackButton = findViewById<Button>(R.id.search_back_button)
         searchBackButton.setOnClickListener{
             finish()
@@ -84,7 +86,10 @@ class SearchActivity : AppCompatActivity() {
             "Guns N' Roses",
             "5:03",
             "https://is5-ssl.mzstatic.com/image/thumb/Music125/v4/a0/4d/c4/a04dc484-03cc-02aa-fa82-5334fcb4bc16/18UMGIM24878.rgb.jpg/100x100bb.jpg "
-        )                   )
+                )
+        )
+        trackRecycler.adapter = TrackAdapter(trackList)
+        trackRecycler.layoutManager = LinearLayoutManager(this)
 
     }
 
