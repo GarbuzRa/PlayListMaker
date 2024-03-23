@@ -6,7 +6,7 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:paddingHorizontal="@dimen/small_padding_10"
-    android:paddingVertical="@dimen/small_padding_10">
+    android:paddingVertical="5dp">
 
     <ImageView
         android:id="@+id/track_image"
@@ -29,7 +29,7 @@
                 android:id="@+id/track_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Smells Like Teen Spirit"
+                android:text="Track Name"
                 android:textSize="16sp"
                 android:fontFamily="@font/ys_display_regular"/>
 
@@ -42,9 +42,8 @@
                     android:id="@+id/track_artist"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Nirvana"
-                    android:textSize="11sp"
-                    android:fontFamily="@font/ys_display_regular"/>
+                    android:text="Track Artist"
+                    style="@style/TrackItemBottomText"/>
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -56,8 +55,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="5:01"
-                    android:textSize="11sp"
-                    android:fontFamily="@font/ys_display_regular"/>
+                    style="@style/TrackItemBottomText"/>
 
             </LinearLayout>
         </LinearLayout>

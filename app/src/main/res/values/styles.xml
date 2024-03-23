@@ -80,5 +80,9 @@
         <item name="android:drawableStart">"@drawable/search"</item>
     </style>
 
+    <style name="TrackItemBottomText">
+        <item name="android:textSize">11sp</item>
+        <item name="fontFamily">"@font/ys_display_regular"</item>
+    </style>
 </resources>
 
