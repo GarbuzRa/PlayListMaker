@@ -63,4 +63,12 @@
             android:paddingEnd="@dimen/padding_big_30"
             android:visibility="gone"/>
     </FrameLayout>
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/track_recycler"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:listitem="@layout/track_item"
+        tools:itemCount="1"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
+
 </LinearLayout>
