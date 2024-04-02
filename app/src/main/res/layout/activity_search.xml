@@ -71,8 +71,7 @@
             android:layout_height="wrap_content"
             tools:listitem="@layout/track_item"
             tools:itemCount="1"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            android:visibility="gone"/>
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
         <LinearLayout
             android:id="@+id/not_found_layout"
             android:layout_width="wrap_content"
