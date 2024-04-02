@@ -52,7 +52,9 @@
             android:background="@drawable/rounded_shape"
             android:padding="10dp"
             android:maxLines="1"
-            android:maxLength="30"/>
+            android:maxLength="30"
+            android:imeOptions="actionDone"
+            android:singleLine="true"/>
 
         <ImageView
             android:id="@+id/clear_text"
@@ -62,13 +64,75 @@
             android:src="@drawable/ic_menu_close_clear_cancel"
             android:paddingEnd="@dimen/padding_big_30"
             android:visibility="gone"/>
-    </FrameLayout>
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/track_recycler"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        tools:listitem="@layout/track_item"
-        tools:itemCount="1"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
+        </FrameLayout>
+            <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/track_recycler"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:listitem="@layout/track_item"
+            tools:itemCount="1"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            android:visibility="gone"/>
+        <LinearLayout
+            android:id="@+id/not_found_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:layout_marginTop="160dp"
+            android:layout_gravity="center"
+            android:visibility="gone">
 
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/NotFoundImageStyle"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/not_found"
+                android:layout_marginTop="12dp"
+                style="@style/TextErrorStyle"/>
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/no_internet_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:layout_gravity="center"
+            android:layout_marginTop="160dp"
+            android:visibility="gone">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/NotInternetImageStyle"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                style="@style/TextErrorStyle"
+                android:text="@string/connection_problem"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                style="@style/TextErrorStyle"
+                android:text="@string/not_loaded"/>
+
+            <Button
+                android:id="@+id/update_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/update"
+                android:layout_marginTop="20dp"
+                style="@style/UpdateButtonStyle"/>
+
+
+
+        </LinearLayout>
 </LinearLayout>

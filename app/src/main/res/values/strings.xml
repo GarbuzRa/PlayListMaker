@@ -14,4 +14,8 @@
     <string name="support_subject" translatable="false">Сообщение разработчикам и разработчицам приложения Playlist Maker</string>
     <string name="support_text" translatable="false">Спасибо разработчикам и разработчицам за крутое приложение!</string>
     <string name="offer_uri" translatable="false">https://yandex.ru/legal/practicum_offer/</string>
+    <string name="connection_problem">Проблемы со связью</string>
+    <string name="not_loaded">Загрузка не удалась. Проверьте \n подключение к интернету</string>
+    <string name="update">Обновить</string>
+    <string name="not_found">Ничего не нашлось</string>
 </resources>
