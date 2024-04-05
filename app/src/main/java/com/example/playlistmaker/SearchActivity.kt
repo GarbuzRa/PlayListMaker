@@ -55,6 +55,7 @@ class SearchActivity : AppCompatActivity() {
                     clearButton.visibility = GONE
                 } else {
                     clearButton.visibility = VISIBLE
+                    trackSearch(editText.text.toString())
                 }
             }
             override fun afterTextChanged(s: Editable?){ //пуста
