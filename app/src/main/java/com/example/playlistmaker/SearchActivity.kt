@@ -55,6 +55,9 @@ class SearchActivity : AppCompatActivity() {
                     clearButton.visibility = GONE
                 } else {
                     clearButton.visibility = VISIBLE
+                    adapter.clearList()
+                    setLayoutVis(notFoundLayout, false)
+                    setLayoutVis(noInternetLayout, false)
                 }
             }
             override fun afterTextChanged(s: Editable?){ //пуста
@@ -76,6 +79,8 @@ class SearchActivity : AppCompatActivity() {
             }
             false
         }
+
+
 
         adapter = TrackAdapter()
         trackRecycler.adapter = adapter
