@@ -62,7 +62,7 @@
 
     <style name="SwitchStyle">
         <item name="android:layout_width">48dp</item>
-        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
         <item name="android:thumbTint">@color/yp_blue</item>
         <item name="android:trackTint">@color/yp_blue_light</item>
     </style>

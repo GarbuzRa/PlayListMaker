@@ -80,8 +80,6 @@ class SearchActivity : AppCompatActivity() {
             false
         }
 
-
-
         adapter = TrackAdapter()
         trackRecycler.adapter = adapter
         trackRecycler.layoutManager = LinearLayoutManager(this)
