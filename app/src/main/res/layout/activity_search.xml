@@ -43,16 +43,18 @@
             style="@style/EditTextStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/search"
-            android:textSize="16sp"
-            android:fontFamily="@font/ys_display_regular"
-            android:inputType="text"
-            android:drawablePadding="12dp"
             android:layout_marginHorizontal="16dp"
             android:background="@drawable/rounded_shape"
-            android:padding="10dp"
+            android:drawablePadding="12dp"
+            android:fontFamily="@font/ys_display_regular"
+            android:hint="@string/search"
+            android:imeOptions="actionDone"
+            android:inputType="text"
+            android:maxLength="30"
             android:maxLines="1"
-            android:maxLength="30"/>
+            android:padding="10dp"
+            android:singleLine="true"
+            android:textSize="16sp" />
 
         <ImageView
             android:id="@+id/clear_text"
@@ -62,13 +64,71 @@
             android:src="@drawable/ic_menu_close_clear_cancel"
             android:paddingEnd="@dimen/padding_big_30"
             android:visibility="gone"/>
-    </FrameLayout>
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/track_recycler"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        tools:listitem="@layout/track_item"
-        tools:itemCount="1"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
+        </FrameLayout>
+            <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/track_recycler"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:listitem="@layout/track_item"
+            tools:itemCount="1"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
+        <LinearLayout
+            android:id="@+id/not_found_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:layout_marginTop="160dp"
+            android:layout_gravity="center"
+            android:visibility="gone">
 
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/NotFoundImageStyle"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/not_found"
+                android:layout_marginTop="12dp"
+                style="@style/TextErrorStyle"/>
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/no_internet_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:layout_gravity="center"
+            android:layout_marginTop="160dp"
+            android:visibility="gone">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/NotInternetImageStyle"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                style="@style/TextErrorStyle"
+                android:text="@string/connection_problem"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                style="@style/TextErrorStyle"
+                android:text="@string/not_loaded"/>
+
+            <Button
+                android:id="@+id/update_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/update"
+                android:layout_marginTop="20dp"
+                style="@style/UpdateButtonStyle"/>
+        </LinearLayout>
 </LinearLayout>
