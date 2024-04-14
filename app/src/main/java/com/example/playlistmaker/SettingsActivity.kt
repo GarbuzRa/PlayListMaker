@@ -4,9 +4,8 @@ import android.content.Intent
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.PersistableBundle
 import android.widget.Button
-import android.widget.Toast
+import androidx.appcompat.widget.SwitchCompat
 
 
 class SettingsActivity : AppCompatActivity() {
@@ -48,6 +47,18 @@ class SettingsActivity : AppCompatActivity() {
             intent.data = Uri.parse(getString(R.string.offer_uri))
             startActivity(intent)
 
+        }
+
+        //темная тема
+        val themeSwitch = findViewById<SwitchCompat>(R.id.theme_switch)
+        themeSwitch.isChecked = (applicationContext as AppSettings).isDarkMode
+        themeSwitch.setOnCheckedChangeListener{
+            _, isChecked ->
+            (applicationContext as AppSettings).themeToggle(isChecked)
+            val sharedPref = getSharedPreferences(APP_SETTINGS_FILENAME, MODE_PRIVATE)
+            sharedPref.edit()
+                .putBoolean(IS_DARK_THEME_KEY, isChecked)
+                .apply()
         }
 
     }

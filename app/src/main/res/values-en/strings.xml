@@ -13,4 +13,6 @@
     <string name="update">Update</string>
     <string name="connection_problem">Connection Problem</string>
     <string name="not_found">Track not found</string>
+    <string name="you_have_searched">You have searched</string>
+    <string name="clear_history">Clear History</string>
 </resources>

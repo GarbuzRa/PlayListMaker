@@ -1,8 +1,10 @@
 package com.example.playlistmaker
 
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.inputmethod.EditorInfo
@@ -11,27 +13,47 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.gson.Gson
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.create
-import java.nio.file.FileVisitOption
 
 class SearchActivity : AppCompatActivity() {
     lateinit var adapter: TrackAdapter
+    lateinit var historyAdapter: TrackAdapter
     lateinit var editText: EditText
     lateinit var trackRecycler: RecyclerView
     lateinit var notFoundLayout: LinearLayout
     lateinit var noInternetLayout: LinearLayout
+    lateinit var searchHistoryLayout: LinearLayout
+    lateinit var searchHistoryRecyclerView: RecyclerView
+    lateinit var historySharedPreferences: SharedPreferences
+
+    private var tracksList = ArrayList<Track>()
+    private var historyTrackList = ArrayList<Track>()
+
+    private lateinit var searchHistoryService: SearchHistoryService
+
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
+        searchHistoryLayout = findViewById(R.id.search_history_layout)
+        searchHistoryRecyclerView = findViewById(R.id.search_history_recycle_view)
+        historySharedPreferences = getSharedPreferences(TRACK_HISTORY_FILENAME, MODE_PRIVATE)
+        searchHistoryService = SearchHistoryService(historySharedPreferences)
+        var clearHistoryButton = findViewById<Button>(R.id.history_clear_button)
+        clearHistoryButton.setOnClickListener{
+            searchHistoryService.clear()
+            setLayoutVis(searchHistoryLayout, false)
+        }
+
         trackRecycler = findViewById(R.id.track_recycler)
         val searchBackButton = findViewById<Button>(R.id.search_back_button)
         searchBackButton.setOnClickListener{
@@ -53,7 +75,12 @@ class SearchActivity : AppCompatActivity() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int){
                 if (s.toString().trim().isEmpty()){
                     clearButton.visibility = GONE
+                    readHistory()
+                    if(historyTrackList.isNotEmpty()){
+                        setLayoutVis(searchHistoryLayout,true)
+                    }
                 } else {
+                    setLayoutVis(searchHistoryLayout, false)
                     clearButton.visibility = VISIBLE
                     adapter.clearList()
                     setLayoutVis(notFoundLayout, false)
@@ -69,6 +96,13 @@ class SearchActivity : AppCompatActivity() {
             editText.setText("")
             keyboardHide()
             adapter.clearList()
+            readHistory()
+            if(historyTrackList.isNotEmpty()){
+                setLayoutVis(searchHistoryLayout, true)
+            }
+            else{
+                setLayoutVis(searchHistoryLayout, false)
+            }
             setLayoutVis(notFoundLayout, false)
             setLayoutVis(noInternetLayout, false)
         }
@@ -80,9 +114,26 @@ class SearchActivity : AppCompatActivity() {
             false
         }
 
-        adapter = TrackAdapter()
+        historyAdapter = TrackAdapter(historyTrackList){historyTrackList ->
+            searchHistoryService.add(historyTrackList)
+        }
+        searchHistoryRecyclerView.adapter = historyAdapter
+
+        adapter = TrackAdapter(tracksList){track ->
+            searchHistoryService.add(track)
+            readHistory()
+            historyAdapter.notifyDataSetChanged()
+            Toast.makeText(this, "${track.trackName} добавлен в историю", Toast.LENGTH_SHORT).show()
+        }
+
         trackRecycler.adapter = adapter
         trackRecycler.layoutManager = LinearLayoutManager(this)
+
+        //запрос истории
+        readHistory()
+        if(historyTrackList.isNotEmpty()){
+            setLayoutVis(searchHistoryLayout, true)
+        }
 
     }
 
@@ -132,7 +183,10 @@ class SearchActivity : AppCompatActivity() {
                     val searchResponse = response.body()
                     searchResponse?.let {
                         if (it.resultCount > 0) {
-                            adapter.updateList(it.results)
+                            trackRecycler.visibility = VISIBLE
+                            tracksList.clear()
+                            tracksList.addAll(it.results)
+                            adapter.updateList(tracksList)
                             trackRecycler.scrollToPosition(0)
                         } else {
                             adapter.clearList()
@@ -153,6 +207,12 @@ class SearchActivity : AppCompatActivity() {
                     setLayoutVis(notFoundLayout, false)
             }
         })
+    }
+    fun readHistory() {
+        historyTrackList.clear()
+        historyTrackList.addAll(searchHistoryService.read())
+        adapter.notifyItemRangeChanged(0, historyTrackList.size)
+        Log.e("myLog", "readHistory + $historyTrackList")
     }
 
 }

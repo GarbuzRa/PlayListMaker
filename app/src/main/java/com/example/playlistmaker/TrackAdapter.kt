@@ -6,8 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import kotlin.concurrent.timerTask
 
-class TrackAdapter() : RecyclerView.Adapter<TrackViewHolder>() {
-    private var trackList: MutableList<Track> = mutableListOf()
+class TrackAdapter(var trackList: MutableList<Track>, var clickListener: (Track) -> Unit) : RecyclerView.Adapter<TrackViewHolder>() {
     fun updateList(trackList: MutableList<Track>) {
         this.trackList = trackList
         notifyDataSetChanged()
@@ -24,6 +23,9 @@ class TrackAdapter() : RecyclerView.Adapter<TrackViewHolder>() {
     }
     override fun onBindViewHolder(holder: TrackViewHolder, position: Int) {
         holder.bind(trackList[position])
+        holder.itemView.setOnClickListener{
+            clickListener(trackList[position])
+        }
     }
 
     override fun getItemCount() = trackList.size

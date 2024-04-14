@@ -66,12 +66,13 @@
             android:visibility="gone"/>
         </FrameLayout>
             <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/track_recycler"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            tools:listitem="@layout/track_item"
-            tools:itemCount="1"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
+                android:id="@+id/track_recycler"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:listitem="@layout/track_item"
+                tools:itemCount="1"
+                android:visibility="gone"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
         <LinearLayout
             android:id="@+id/not_found_layout"
             android:layout_width="wrap_content"
@@ -131,4 +132,39 @@
                 android:layout_marginTop="20dp"
                 style="@style/UpdateButtonStyle"/>
         </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/search_history_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <TextView
+            style="@style/main"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="12dp"
+            android:text="@string/you_have_searched"/>
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/search_history_recycle_view"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:itemCount="8"
+            android:layout_weight="1"
+            tools:listitem="@layout/track_item" />
+
+        <Button
+            android:id="@+id/history_clear_button"
+            style="@style/refresh_button_style"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="16dp"
+            android:text="@string/clear_history"
+            app:cornerRadius="60dp" />
+    </LinearLayout>
 </LinearLayout>
