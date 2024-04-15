@@ -11,7 +11,7 @@ class SearchHistoryService(sharedPreferences: SharedPreferences) {
         return Gson().fromJson(json, Array<Track>::class.java)
     }
 
-    fun clear(){
+    fun clear() {
         sharedPreferences
             .edit()
             .clear()
