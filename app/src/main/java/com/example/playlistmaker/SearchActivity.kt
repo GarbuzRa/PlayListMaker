@@ -122,7 +122,6 @@ class SearchActivity : AppCompatActivity() {
         adapter = TrackAdapter(tracksList){track ->
             searchHistoryService.add(track)
             readHistory()
-            historyAdapter.notifyDataSetChanged()
             Toast.makeText(this, "${track.trackName} добавлен в историю", Toast.LENGTH_SHORT).show()
         }
 
