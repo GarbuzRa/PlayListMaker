@@ -211,7 +211,7 @@ class SearchActivity : AppCompatActivity() {
     fun readHistory() {
         historyTrackList.clear()
         historyTrackList.addAll(searchHistoryService.read())
-        adapter.notifyItemRangeChanged(0, historyTrackList.size)
+        historyAdapter.notifyItemRangeChanged(0, historyTrackList.size)
         Log.e("myLog", "readHistory + $historyTrackList")
     }
 

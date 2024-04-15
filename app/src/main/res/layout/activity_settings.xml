@@ -21,6 +21,7 @@
 
         <TextView
             style="@style/TextSettingsStyle"
+
             android:text="@string/dark_theme" />
 
         <androidx.appcompat.widget.SwitchCompat
