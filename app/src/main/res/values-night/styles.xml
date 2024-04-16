@@ -112,9 +112,9 @@
 
     <style name="refresh_button_style">
         <item name="backgroundTint">@color/white</item>
-        <item name="android:textColor">"@color/black"</item>
         <item name="textAllCaps">false</item>
         <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/yp_black</item>
     </style>
 
 </resources>
