@@ -21,9 +21,11 @@
 
         <TextView
             style="@style/TextSettingsStyle"
+
             android:text="@string/dark_theme" />
 
-        <Switch
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/theme_switch"
             style="@style/SwitchStyle"
             tools:ignore="UseSwitchCompatOrMaterialXml" />
     </LinearLayout>

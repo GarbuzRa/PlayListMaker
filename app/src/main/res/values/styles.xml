@@ -51,8 +51,9 @@
     </style>
 
     <style name="TextSettingsStyle">
-        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_width">0sp</item>
         <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center_vertical</item>
         <item name="android:layout_weight">1</item>
         <item name="android:textColor">@color/black</item>
         <item name="android:textSize">16sp</item>
@@ -106,6 +107,19 @@
         <item name="backgroundTint">@color/yp_black</item>
         <item name="android:textColor">@color/white</item>
         <item name="cornerRadius">54dp</item>
+    </style>
+
+    <style name="main">
+        <item name="android:textSize">22sp</item>
+        <item name="android:fontFamily">@font/ys_display_medium</item>
+        <item name="android:textColor">@color/yp_black</item>
+    </style>
+
+    <style name="refresh_button_style">
+        <item name="backgroundTint">@color/black</item>
+        <item name="textAllCaps">false</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/white</item>
     </style>
 </resources>
 

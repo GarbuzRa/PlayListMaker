@@ -18,4 +18,6 @@
     <string name="not_loaded">Загрузка не удалась. Проверьте \n подключение к интернету</string>
     <string name="update">Обновить</string>
     <string name="not_found">Ничего не нашлось</string>
+    <string name="you_have_searched">Вы искали</string>
+    <string name="clear_history">Очистить историю</string>
 </resources>
