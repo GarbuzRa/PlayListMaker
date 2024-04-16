@@ -1,5 +1,6 @@
 package com.example.playlistmaker
 
+import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.text.Editable
@@ -13,10 +14,10 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.gson.Gson
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -114,15 +115,16 @@ class SearchActivity : AppCompatActivity() {
             false
         }
 
-        historyAdapter = TrackAdapter(historyTrackList){historyTrackList ->
-            searchHistoryService.add(historyTrackList)
+        historyAdapter = TrackAdapter(historyTrackList){track ->
+            searchHistoryService.add(track)
+            gotoPlayer(track)
         }
         searchHistoryRecyclerView.adapter = historyAdapter
 
         adapter = TrackAdapter(tracksList){track ->
             searchHistoryService.add(track)
             readHistory()
-            Toast.makeText(this, "${track.trackName} добавлен в историю", Toast.LENGTH_SHORT).show()
+            gotoPlayer(track)
         }
 
         trackRecycler.adapter = adapter
@@ -212,6 +214,12 @@ class SearchActivity : AppCompatActivity() {
         historyTrackList.addAll(searchHistoryService.read())
         historyAdapter.notifyItemRangeChanged(0, historyTrackList.size)
         Log.e("myLog", "readHistory + $historyTrackList")
+    }
+
+    private fun gotoPlayer(track: Track) {
+        val intent = Intent(this, PlayerActivity::class.java)
+        intent.putExtra(CURRENT_TRACK, Gson().toJson(track))
+        startActivity(intent)
     }
 
 }

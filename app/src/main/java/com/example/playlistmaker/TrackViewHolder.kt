@@ -12,9 +12,9 @@ import java.util.Locale
 
 class TrackViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     val trackImage: ImageView = itemView.findViewById(R.id.track_image)
-    val trackName: TextView = itemView.findViewById(R.id.track_name)
+    val trackName: TextView = itemView.findViewById(R.id.track_name_text_view)
     val trackArtist: TextView = itemView.findViewById(R.id.track_artist)
-    val trackTime: TextView = itemView.findViewById(R.id.track_time)
+    val trackTime: TextView = itemView.findViewById(R.id.track_length_const)
 
     fun bind(track: Track) {
         if (track.artworkUrl100.isNotEmpty()) {
