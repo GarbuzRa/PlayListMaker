@@ -31,14 +31,14 @@ class SettingsActivity : AppCompatActivity() {
 
         val supportButton = findViewById<Button>(R.id.supportButton)
         supportButton.setOnClickListener {
-            val intent = Intent()
-            intent.action = Intent.ACTION_SENDTO
-            intent.data = Uri.parse(getString(R.string.mailto_mymail))
-            intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.support_subject))
-            intent.putExtra(Intent.EXTRA_TEXT, getString(R.string.support_text))
+            val mailSubject = getString(R.string.support_subject)
+            val mailText = getString(R.string.support_text)
+            val intent = Intent(Intent.ACTION_SENDTO)
+            intent.data = Uri.parse("mailto:")
+            intent.putExtra(Intent.EXTRA_EMAIL, arrayOf(getString(R.string.mailto_mymail)))
+            intent.putExtra(Intent.EXTRA_SUBJECT, mailSubject)
+            intent.putExtra(Intent.EXTRA_TEXT, mailText)
             startActivity(intent)
-
-
         }
         val agreeButton = findViewById<Button>(R.id.agreeButton)
         agreeButton.setOnClickListener {

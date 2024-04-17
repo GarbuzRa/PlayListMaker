@@ -27,7 +27,8 @@
         <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/theme_switch"
             style="@style/SwitchStyle"
-            tools:ignore="UseSwitchCompatOrMaterialXml" />
+
+            android:checked="true" />
     </LinearLayout>
 
     <Button
