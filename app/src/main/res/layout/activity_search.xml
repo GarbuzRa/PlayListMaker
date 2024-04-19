@@ -36,7 +36,8 @@
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp">
 
         <EditText
             android:id="@+id/track_search"
@@ -53,9 +54,8 @@
             android:maxLength="30"
             android:maxLines="1"
             android:padding="10dp"
-            android:layout_marginBottom="20dp"
             android:singleLine="true"
-            android:textSize="16sp"/>
+            android:textSize="16sp" />
 
         <ImageView
             android:id="@+id/clear_text"
