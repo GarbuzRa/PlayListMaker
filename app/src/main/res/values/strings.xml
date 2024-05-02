@@ -20,4 +20,12 @@
     <string name="not_found">Ничего не нашлось</string>
     <string name="you_have_searched">Вы искали</string>
     <string name="clear_history">Очистить историю</string>
+    <string name="duration">Длительность</string>
+    <string name="album">Альбом</string>
+    <string name="year">Год</string>
+    <string name="genre">Жанр</string>
+    <string name="country">Страна</string>
+    <string name="play_clicked" translatable="false">Нажата кнопка Play</string>
+    <string name="added_to_liked" translatable="false">%1$s добавлен в Понравившиеся</string>
+    <string name="added_to_library" translatable="false">%1$s добавлен в библиотеку</string>
 </resources>

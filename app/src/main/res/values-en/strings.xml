@@ -15,4 +15,9 @@
     <string name="not_found">Track not found</string>
     <string name="you_have_searched">You have searched</string>
     <string name="clear_history">Clear History</string>
+    <string name="duration">Duration</string>
+    <string name="album">Album</string>
+    <string name="year">Year</string>
+    <string name="genre">Genre</string>
+    <string name="country">Country</string>
 </resources>

@@ -26,7 +26,7 @@
             android:paddingLeft="@dimen/small_padding_10">
 
             <TextView
-                android:id="@+id/track_name"
+                android:id="@+id/track_name_text_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Track Name"
@@ -51,7 +51,7 @@
                     android:layout_gravity="center"
                     android:paddingHorizontal="5dp"/>
                 <TextView
-                    android:id="@+id/track_time"
+                    android:id="@+id/track_length_const"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="5:01"

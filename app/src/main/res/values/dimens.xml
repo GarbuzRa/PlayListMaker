@@ -2,7 +2,7 @@
 <resources>
     <dimen name="std_height">60dp</dimen>
     <dimen name="std_padding">20dp</dimen>
-    <dimen name="search_bar_corner_radius">16dp</dimen>
+    <dimen name="search_bar_corner_radius">8dp</dimen>
     <dimen name="std_padding_16">16dp</dimen>
     <dimen name="small_padding_10">10dp</dimen>
     <dimen name="padding_big_30">30dp</dimen>

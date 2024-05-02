@@ -4,6 +4,8 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 
+
+
 class TrackAdapter(var trackList: MutableList<Track>, var clickListener: (Track) -> Unit) :
     RecyclerView.Adapter<TrackViewHolder>() {
     fun updateList(trackList: MutableList<Track>) {
