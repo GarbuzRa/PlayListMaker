@@ -3,6 +3,8 @@ package com.example.playlistmaker
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -14,6 +16,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.ProgressBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -34,10 +37,11 @@ class SearchActivity : AppCompatActivity() {
     lateinit var searchHistoryLayout: LinearLayout
     lateinit var searchHistoryRecyclerView: RecyclerView
     lateinit var historySharedPreferences: SharedPreferences
-
+    lateinit var progressBar: ProgressBar
     private var tracksList = ArrayList<Track>()
     private var historyTrackList = ArrayList<Track>()
-
+    private var handler = Handler(Looper.getMainLooper())
+    private var searchRunnable: Runnable? = null
     private lateinit var searchHistoryService: SearchHistoryService
 
 
@@ -63,6 +67,7 @@ class SearchActivity : AppCompatActivity() {
         editText = findViewById<EditText>(R.id.track_search)
         val clearButton = findViewById<ImageView>(R.id.clear_text)
         val updateButton = findViewById<Button>(R.id.update_button)
+        progressBar = findViewById<ProgressBar>(R.id.progress_bar)
         updateButton.setOnClickListener {
             onUpdateButtonClick()
         }
@@ -70,9 +75,7 @@ class SearchActivity : AppCompatActivity() {
         noInternetLayout = findViewById(R.id.no_internet_layout)
 
         val myTextWatcher = object : TextWatcher{
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-
-            }
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int){
                 if (s.toString().trim().isEmpty()){
                     clearButton.visibility = GONE
@@ -86,11 +89,13 @@ class SearchActivity : AppCompatActivity() {
                     adapter.clearList()
                     setLayoutVis(notFoundLayout, false)
                     setLayoutVis(noInternetLayout, false)
+                    searchRunnable?.let {handler.removeCallbacks(it)} //очистка задачи searchRunnable из хэндлера
+                    searchRunnable = Runnable {trackSearch(s.toString())} //создали задачу(поиска) и поместили в searchRunnable
+                    handler.postDelayed(searchRunnable!!, 500L) //поместить задачу на 500млс
+                    //с 92-94 каждый раз когда пользователь вводит символ, отчитывается 500млс и запускается поиск
                 }
             }
-            override fun afterTextChanged(s: Editable?){ //пуста
-
-            }
+            override fun afterTextChanged(s: Editable?){}
         }
         editText.addTextChangedListener(myTextWatcher)
         clearButton.setOnClickListener{
@@ -117,14 +122,14 @@ class SearchActivity : AppCompatActivity() {
 
         historyAdapter = TrackAdapter(historyTrackList){track ->
             searchHistoryService.add(track)
-            gotoPlayer(track)
+            debounceClick{gotoPlayer(track)} //обернули вызов фу-ии gotoPlayer в дебоунс
         }
         searchHistoryRecyclerView.adapter = historyAdapter
 
         adapter = TrackAdapter(tracksList){track ->
             searchHistoryService.add(track)
             readHistory()
-            gotoPlayer(track)
+            debounceClick {gotoPlayer(track)} //обернули вызов фу-ии gotoPlayer в дебоунc
         }
 
         trackRecycler.adapter = adapter
@@ -167,6 +172,7 @@ class SearchActivity : AppCompatActivity() {
         trackSearch(editText.text.toString())
     }
     private fun trackSearch(query: String) {
+        progressBar.visibility = VISIBLE
         val retrofit = Retrofit.Builder()
             .baseUrl("https://itunes.apple.com")
             .addConverterFactory(GsonConverterFactory.create())
@@ -180,6 +186,7 @@ class SearchActivity : AppCompatActivity() {
                 call: Call<SearchResponse>,
                 response: Response<SearchResponse>
             ) {
+                progressBar.visibility = GONE
                 if (response.isSuccessful) {
                     val searchResponse = response.body()
                     searchResponse?.let {
@@ -203,9 +210,10 @@ class SearchActivity : AppCompatActivity() {
             }
 
             override fun onFailure(call: Call<SearchResponse>, t: Throwable) {
-                    adapter.clearList()
-                    setLayoutVis(noInternetLayout, true)
-                    setLayoutVis(notFoundLayout, false)
+                progressBar.visibility = GONE
+                adapter.clearList()
+                setLayoutVis(noInternetLayout, true)
+                setLayoutVis(notFoundLayout, false)
             }
         })
     }
@@ -214,6 +222,10 @@ class SearchActivity : AppCompatActivity() {
         historyTrackList.addAll(searchHistoryService.read())
         historyAdapter.notifyItemRangeChanged(0, historyTrackList.size)
         Log.e("myLog", "readHistory + $historyTrackList")
+    }
+
+     private fun debounceClick(action:() -> Unit) {
+        handler.postDelayed({action()}, 300L)
     }
 
     private fun gotoPlayer(track: Track) {
