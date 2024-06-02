@@ -4,6 +4,8 @@
         <item name="colorPrimary">@color/yp_blue</item>
         <item name="colorPrimaryVariant">@color/white</item>
         <item name="playPauseColor">@color/yp_black</item>
+        <item name="searchIconColor">#AEAFB4</item>
+        <item name="clearIconColor">#AEAFB4</item>
         <!-- Customize your light theme here. -->
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
     </style>

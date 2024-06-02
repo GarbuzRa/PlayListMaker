@@ -115,6 +115,7 @@ class PlayerActivity : AppCompatActivity() {
           mediaPlayer?.let {
                val currentPosition = it.currentPosition
               trackTimeTextView.text = SimpleDateFormat("mm:ss", Locale.getDefault()).format(currentPosition)
+              handler.postDelayed(this, 500L)
               //у текстВью (трек таймер) меняем текст. после ровно мы форматируем через класс SimpleDateFormat
               // (задаем формат (ммсс) ||| Locale.getDefault() (берем фу-ию локализованного времени) |||
               // format(currentPosition) - результат форматируем из мс

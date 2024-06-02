@@ -91,7 +91,7 @@ class SearchActivity : AppCompatActivity() {
                     setLayoutVis(noInternetLayout, false)
                     searchRunnable?.let {handler.removeCallbacks(it)} //очистка задачи searchRunnable из хэндлера
                     searchRunnable = Runnable {trackSearch(s.toString())} //создали задачу(поиска) и поместили в searchRunnable
-                    handler.postDelayed(searchRunnable!!, 500L) //поместить задачу на 500млс
+                    handler.postDelayed(searchRunnable!!, 2000L) //поместить задачу на 2000мс
                     //с 92-94 каждый раз когда пользователь вводит символ, отчитывается 500млс и запускается поиск
                 }
             }
