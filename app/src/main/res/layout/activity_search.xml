@@ -55,7 +55,8 @@
             android:maxLines="1"
             android:padding="10dp"
             android:singleLine="true"
-            android:textSize="16sp" />
+            android:textSize="16sp"
+            android:drawableStart="@drawable/search"/>
 
         <ImageView
             android:id="@+id/clear_text"
@@ -64,8 +65,17 @@
             android:layout_gravity="center_vertical|end"
             android:src="@drawable/ic_menu_close_clear_cancel"
             android:paddingEnd="@dimen/padding_big_30"
-            android:visibility="gone"/>
+            android:visibility="visible"/>
         </FrameLayout>
+        <ProgressBar
+            android:id="@+id/progress_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:indeterminateTint="@color/yp_blue"
+            android:layout_marginTop="50dp"
+            android:visibility="gone"/>
+
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/track_recycler"
                 android:layout_width="match_parent"

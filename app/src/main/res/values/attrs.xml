@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <attr name="playPauseColor" format="color"/>
+    <attr name="searchIconColor" format="color"/>
+    <attr name="clearIconColor" format="color"/>
+</resources>

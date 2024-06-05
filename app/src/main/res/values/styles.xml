@@ -76,7 +76,7 @@
         <item name="backgroundTint">@color/yp_light_gray</item>
         <item name="android:textColor">@color/black</item>
         <item name="android:textColorHint">@color/yp_text_gray</item>
-        <item name="android:drawableStart">"@drawable/search"</item>
+
     </style>
 
     <style name="TrackItemBottomText">

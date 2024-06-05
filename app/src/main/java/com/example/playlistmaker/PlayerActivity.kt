@@ -1,6 +1,9 @@
 package com.example.playlistmaker
 
+import android.media.MediaPlayer
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
@@ -15,25 +18,32 @@ import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 class PlayerActivity : AppCompatActivity() {
-
+    private var mediaPlayer: MediaPlayer? = null
     private lateinit var track: Track
+    private lateinit var playImageView: ImageView
+    private lateinit var trackTimeTextView: TextView
+    private lateinit var handler: Handler
+
     private fun getTrack(json: String?) = Gson().fromJson(json, Track::class.java)
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_player)
         val playerBackButton = findViewById<Button>(R.id.back_button)
         val addImageView = findViewById<ImageView>(R.id.add_image_view)
-        val playImageView = findViewById<ImageView>(R.id.play_image_view)
+        playImageView = findViewById<ImageView>(R.id.play_image_view)
         val likeButton = findViewById<ImageView>(R.id.like_button)
         val coverImageView = findViewById<ImageView>(R.id.cover_image_view)
         val trackNameTextView = findViewById<TextView>(R.id.track_name_text_view)
         val trackArtistTextView = findViewById<TextView>(R.id.track_artist_text_view)
         val trackLengthTextView = findViewById<TextView>(R.id.track_length_text_view)
         val trackGenreTextView = findViewById<TextView>(R.id.track_genre_text_view)
-        val trackTimeTextView = findViewById<TextView>(R.id.track_time_text_view)
+        trackTimeTextView = findViewById<TextView>(R.id.track_time_text_view)
         val trackCountryTextView = findViewById<TextView>(R.id.track_country_text_view)
         val trackYearTextView = findViewById<TextView>(R.id.track_year_text_view)
         val trackAlbumTextView = findViewById<TextView>(R.id.track_album_text_view)
+        handler = Handler(Looper.getMainLooper())
 
         track = getTrack(intent.getStringExtra(CURRENT_TRACK))
         trackNameTextView.text = track.trackName
@@ -41,7 +51,7 @@ class PlayerActivity : AppCompatActivity() {
         trackGenreTextView.text = track.primaryGenreName
         trackAlbumTextView.text = track.collectionName
         trackCountryTextView.text = track.country
-        trackTimeTextView.text = "00:01"
+        trackTimeTextView.text = "00:00"
         trackLengthTextView.text =
             SimpleDateFormat("mm:ss", Locale.getDefault()).format(track.trackTimeMillis)
         trackYearTextView.text = LocalDateTime.parse(
@@ -61,7 +71,7 @@ class PlayerActivity : AppCompatActivity() {
         }
 
         playImageView.setOnClickListener {
-            showMessage(getString(R.string.play_clicked))
+            togglePlayback()
         }
 
         likeButton.setOnClickListener {
@@ -75,6 +85,60 @@ class PlayerActivity : AppCompatActivity() {
 
     private fun showMessage(message : String){
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+    }
+     private fun togglePlayback() { //функция переключения состояния плеера
+        if (mediaPlayer == null) {
+            initializeMediaPlayer()
+        }
+         if (mediaPlayer?.isPlaying == true) {
+             pausePlayback()
+         } else {
+             startPlayback()
+         }
+     }
+
+     private fun initializeMediaPlayer() {
+        mediaPlayer = MediaPlayer().apply {
+            setDataSource(track.previewUrl)
+            prepare()
+            setOnCompletionListener {onPlaybackCompleted()}
+        }
+    }
+
+    private fun onPlaybackCompleted() {
+        playImageView.setImageResource(R.drawable.play)
+        trackTimeTextView.text = "00:00"
+        handler.removeCallbacks(updateTimeTask)
+    }
+  private val updateTimeTask = object: Runnable {
+      override fun run() {
+          mediaPlayer?.let {
+               val currentPosition = it.currentPosition
+              trackTimeTextView.text = SimpleDateFormat("mm:ss", Locale.getDefault()).format(currentPosition)
+              handler.postDelayed(this, 500L)
+              //у текстВью (трек таймер) меняем текст. после ровно мы форматируем через класс SimpleDateFormat
+              // (задаем формат (ммсс) ||| Locale.getDefault() (берем фу-ию локализованного времени) |||
+              // format(currentPosition) - результат форматируем из мс
+          }
+      }
+  }
+    private fun startPlayback() {
+        mediaPlayer?.start()
+        playImageView.setImageResource(R.drawable.pause)
+        handler.post(updateTimeTask)
+    }
+
+    private fun pausePlayback() {
+        mediaPlayer?.pause()
+        playImageView.setImageResource(R.drawable.play)
+        handler.removeCallbacks(updateTimeTask)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        mediaPlayer?.release()
+        mediaPlayer = null
+        handler.removeCallbacks(updateTimeTask)
     }
 
 }
