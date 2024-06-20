@@ -11,6 +11,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.example.playlistmaker.databinding.ActivityPlayerBinding
 import com.google.gson.Gson
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
@@ -19,9 +20,8 @@ import java.util.Locale
 
 class PlayerActivity : AppCompatActivity() {
     private var mediaPlayer: MediaPlayer? = null
+     private lateinit var binding: ActivityPlayerBinding
     private lateinit var track: Track
-    private lateinit var playImageView: ImageView
-    private lateinit var trackTimeTextView: TextView
     private lateinit var handler: Handler
 
     private fun getTrack(json: String?) = Gson().fromJson(json, Track::class.java)
@@ -29,56 +29,46 @@ class PlayerActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_player)
-        val playerBackButton = findViewById<Button>(R.id.back_button)
-        val addImageView = findViewById<ImageView>(R.id.add_image_view)
-        playImageView = findViewById<ImageView>(R.id.play_image_view)
-        val likeButton = findViewById<ImageView>(R.id.like_button)
-        val coverImageView = findViewById<ImageView>(R.id.cover_image_view)
-        val trackNameTextView = findViewById<TextView>(R.id.track_name_text_view)
-        val trackArtistTextView = findViewById<TextView>(R.id.track_artist_text_view)
-        val trackLengthTextView = findViewById<TextView>(R.id.track_length_text_view)
-        val trackGenreTextView = findViewById<TextView>(R.id.track_genre_text_view)
-        trackTimeTextView = findViewById<TextView>(R.id.track_time_text_view)
-        val trackCountryTextView = findViewById<TextView>(R.id.track_country_text_view)
-        val trackYearTextView = findViewById<TextView>(R.id.track_year_text_view)
-        val trackAlbumTextView = findViewById<TextView>(R.id.track_album_text_view)
+        binding = ActivityPlayerBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+
         handler = Handler(Looper.getMainLooper())
 
         track = getTrack(intent.getStringExtra(CURRENT_TRACK))
-        trackNameTextView.text = track.trackName
-        trackArtistTextView.text = track.artistName
-        trackGenreTextView.text = track.primaryGenreName
-        trackAlbumTextView.text = track.collectionName
-        trackCountryTextView.text = track.country
-        trackTimeTextView.text = "00:00"
-        trackLengthTextView.text =
+        binding.trackNameTextView.text = track.trackName
+        binding.trackArtistTextView.text = track.artistName
+        binding.trackGenreTextView.text = track.primaryGenreName
+        binding.trackAlbumTextView.text = track.collectionName
+        binding.trackCountryTextView.text = track.country
+        binding.trackTimeTextView.text = "00:00"
+        binding.trackLengthTextView.text =
             SimpleDateFormat("mm:ss", Locale.getDefault()).format(track.trackTimeMillis)
-        trackYearTextView.text = LocalDateTime.parse(
+       binding.trackYearTextView.text = LocalDateTime.parse(
             track.releaseDate,
             DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'")
         ).year.toString()
 
-        Glide.with(coverImageView)
+        Glide.with(binding.coverImageView)
             .load(track.artworkUrl100.replaceAfterLast('/', "512x512bb.jpg"))
             .placeholder(R.drawable.placeholder)
             .centerCrop()
             .transform(RoundedCorners(15))
-            .into(coverImageView)
+            .into(binding.coverImageView)
 
-        playerBackButton.setOnClickListener {
+       binding.backButton.setOnClickListener {
             finish()
         }
 
-        playImageView.setOnClickListener {
+        binding.playImageView.setOnClickListener {
             togglePlayback()
         }
 
-        likeButton.setOnClickListener {
+        binding.likeButton.setOnClickListener {
             showMessage(getString(R.string.added_to_liked, track.trackName))
         }
 
-        addImageView.setOnClickListener {
+        binding.addImageView.setOnClickListener {
             showMessage(getString(R.string.added_to_library, track.trackName))
         }
     }
@@ -106,15 +96,15 @@ class PlayerActivity : AppCompatActivity() {
     }
 
     private fun onPlaybackCompleted() {
-        playImageView.setImageResource(R.drawable.play)
-        trackTimeTextView.text = "00:00"
+        binding.playImageView.setImageResource(R.drawable.play)
+        binding.trackTimeTextView.text = "00:00"
         handler.removeCallbacks(updateTimeTask)
     }
   private val updateTimeTask = object: Runnable {
       override fun run() {
           mediaPlayer?.let {
                val currentPosition = it.currentPosition
-              trackTimeTextView.text = SimpleDateFormat("mm:ss", Locale.getDefault()).format(currentPosition)
+              binding.trackTimeTextView.text = SimpleDateFormat("mm:ss", Locale.getDefault()).format(currentPosition)
               handler.postDelayed(this, 500L)
               //у текстВью (трек таймер) меняем текст. после ровно мы форматируем через класс SimpleDateFormat
               // (задаем формат (ммсс) ||| Locale.getDefault() (берем фу-ию локализованного времени) |||
@@ -124,13 +114,13 @@ class PlayerActivity : AppCompatActivity() {
   }
     private fun startPlayback() {
         mediaPlayer?.start()
-        playImageView.setImageResource(R.drawable.pause)
+        binding.playImageView.setImageResource(R.drawable.pause)
         handler.post(updateTimeTask)
     }
 
     private fun pausePlayback() {
         mediaPlayer?.pause()
-        playImageView.setImageResource(R.drawable.play)
+        binding.playImageView.setImageResource(R.drawable.play)
         handler.removeCallbacks(updateTimeTask)
     }
 

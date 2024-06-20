@@ -20,6 +20,7 @@ import android.widget.ProgressBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.playlistmaker.databinding.ActivitySearchBinding
 import com.google.gson.Gson
 import retrofit2.Call
 import retrofit2.Callback
@@ -28,16 +29,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 class SearchActivity : AppCompatActivity() {
-    lateinit var adapter: TrackAdapter
-    lateinit var historyAdapter: TrackAdapter
-    lateinit var editText: EditText
-    lateinit var trackRecycler: RecyclerView
-    lateinit var notFoundLayout: LinearLayout
-    lateinit var noInternetLayout: LinearLayout
-    lateinit var searchHistoryLayout: LinearLayout
-    lateinit var searchHistoryRecyclerView: RecyclerView
-    lateinit var historySharedPreferences: SharedPreferences
-    lateinit var progressBar: ProgressBar
+     private lateinit var binding: ActivitySearchBinding
     private var tracksList = ArrayList<Track>()
     private var historyTrackList = ArrayList<Track>()
     private var handler = Handler(Looper.getMainLooper())
@@ -48,47 +40,37 @@ class SearchActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_search)
-        searchHistoryLayout = findViewById(R.id.search_history_layout)
-        searchHistoryRecyclerView = findViewById(R.id.search_history_recycle_view)
-        historySharedPreferences = getSharedPreferences(TRACK_HISTORY_FILENAME, MODE_PRIVATE)
-        searchHistoryService = SearchHistoryService(historySharedPreferences)
+        binding = ActivitySearchBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        searchHistoryService = SearchHistoryService(binding.historySharedPreferences)
         var clearHistoryButton = findViewById<Button>(R.id.history_clear_button)
         clearHistoryButton.setOnClickListener{
             searchHistoryService.clear()
-            setLayoutVis(searchHistoryLayout, false)
+            setLayoutVis(binding.searchHistoryLayout, false)
         }
 
-        trackRecycler = findViewById(R.id.track_recycler)
-        val searchBackButton = findViewById<Button>(R.id.search_back_button)
-        searchBackButton.setOnClickListener{
+        binding.searchBackButton.setOnClickListener{
             finish()
         }
-        editText = findViewById<EditText>(R.id.track_search)
-        val clearButton = findViewById<ImageView>(R.id.clear_text)
-        val updateButton = findViewById<Button>(R.id.update_button)
-        progressBar = findViewById<ProgressBar>(R.id.progress_bar)
-        updateButton.setOnClickListener {
+
+        binding.updateButton.setOnClickListener {
             onUpdateButtonClick()
         }
-        notFoundLayout = findViewById(R.id.not_found_layout)
-        noInternetLayout = findViewById(R.id.no_internet_layout)
-
         val myTextWatcher = object : TextWatcher{
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int){
                 if (s.toString().trim().isEmpty()){
-                    clearButton.visibility = GONE
+                    binding.clearButton.visibility = GONE
                     readHistory()
                     if(historyTrackList.isNotEmpty()){
-                        setLayoutVis(searchHistoryLayout,true)
+                        setLayoutVis(binding.searchHistoryLayout,true)
                     }
                 } else {
-                    setLayoutVis(searchHistoryLayout, false)
-                    clearButton.visibility = VISIBLE
-                    adapter.clearList()
-                    setLayoutVis(notFoundLayout, false)
-                    setLayoutVis(noInternetLayout, false)
+                    setLayoutVis(binding.searchHistoryLayout, false)
+                    binding.clearButton.visibility = VISIBLE
+                    binding.adapter.clearList()
+                    setLayoutVis(binding.notFoundLayout, false)
+                    setLayoutVis(binding.noInternetLayout, false)
                     searchRunnable?.let {handler.removeCallbacks(it)} //очистка задачи searchRunnable из хэндлера
                     searchRunnable = Runnable {trackSearch(s.toString())} //создали задачу(поиска) и поместили в searchRunnable
                     handler.postDelayed(searchRunnable!!, 2000L) //поместить задачу на 2000мс
@@ -97,48 +79,48 @@ class SearchActivity : AppCompatActivity() {
             }
             override fun afterTextChanged(s: Editable?){}
         }
-        editText.addTextChangedListener(myTextWatcher)
-        clearButton.setOnClickListener{
-            editText.setText("")
+        binding.editText.addTextChangedListener(myTextWatcher)
+        binding.clearButton.setOnClickListener{
+            binding.editText.setText("")
             keyboardHide()
-            adapter.clearList()
+            binding.adapter.clearList()
             readHistory()
             if(historyTrackList.isNotEmpty()){
-                setLayoutVis(searchHistoryLayout, true)
+                setLayoutVis(binding.searchHistoryLayout, true)
             }
             else{
-                setLayoutVis(searchHistoryLayout, false)
+                setLayoutVis(binding.searchHistoryLayout, false)
             }
-            setLayoutVis(notFoundLayout, false)
-            setLayoutVis(noInternetLayout, false)
+            setLayoutVis(binding.notFoundLayout, false)
+            setLayoutVis(binding.noInternetLayout, false)
         }
-        editText.setOnEditorActionListener { _, actionId, _ ->
+        binding.editText.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
-                trackSearch(editText.text.toString())
+                trackSearch(binding.editText.text.toString())
                 true
             }
             false
         }
 
-        historyAdapter = TrackAdapter(historyTrackList){track ->
+        binding.historyAdapter = TrackAdapter(historyTrackList){track ->
             searchHistoryService.add(track)
             debounceClick{gotoPlayer(track)} //обернули вызов фу-ии gotoPlayer в дебоунс
         }
-        searchHistoryRecyclerView.adapter = historyAdapter
+        binding.searchHistoryRecyclerView.adapter = historyAdapter
 
-        adapter = TrackAdapter(tracksList){track ->
+        binding.adapter = TrackAdapter(tracksList){track ->
             searchHistoryService.add(track)
             readHistory()
             debounceClick {gotoPlayer(track)} //обернули вызов фу-ии gotoPlayer в дебоунc
         }
 
-        trackRecycler.adapter = adapter
-        trackRecycler.layoutManager = LinearLayoutManager(this)
+        binding.trackRecycler.adapter = adapter
+        binding.trackRecycler.layoutManager = LinearLayoutManager(this)
 
         //запрос истории
         readHistory()
         if(historyTrackList.isNotEmpty()){
-            setLayoutVis(searchHistoryLayout, true)
+            setLayoutVis(binding.searchHistoryLayout, true)
         }
 
     }
@@ -167,12 +149,12 @@ class SearchActivity : AppCompatActivity() {
         }
     }
     private fun onUpdateButtonClick() {
-        setLayoutVis(notFoundLayout, false)
-        setLayoutVis(noInternetLayout, false)
-        trackSearch(editText.text.toString())
+        setLayoutVis(binding.notFoundLayout, false)
+        setLayoutVis(binding.noInternetLayout, false)
+        trackSearch(binding.editText.text.toString())
     }
     private fun trackSearch(query: String) {
-        progressBar.visibility = VISIBLE
+        binding.progressBar.visibility = VISIBLE
         val retrofit = Retrofit.Builder()
             .baseUrl("https://itunes.apple.com")
             .addConverterFactory(GsonConverterFactory.create())
@@ -186,41 +168,41 @@ class SearchActivity : AppCompatActivity() {
                 call: Call<SearchResponse>,
                 response: Response<SearchResponse>
             ) {
-                progressBar.visibility = GONE
+                binding.progressBar.visibility = GONE
                 if (response.isSuccessful) {
                     val searchResponse = response.body()
                     searchResponse?.let {
                         if (it.resultCount > 0) {
-                            trackRecycler.visibility = VISIBLE
+                            binding.trackRecycler.visibility = VISIBLE
                             tracksList.clear()
                             tracksList.addAll(it.results)
-                            adapter.updateList(tracksList)
-                            trackRecycler.scrollToPosition(0)
+                            binding.adapter.updateList(tracksList)
+                            binding.trackRecycler.scrollToPosition(0)
                         } else {
                             adapter.clearList()
-                            setLayoutVis(noInternetLayout, false)
-                            setLayoutVis(notFoundLayout, true)
+                            setLayoutVis(binding.noInternetLayout, false)
+                            setLayoutVis(binding.notFoundLayout, true)
                         }
                     }
                 } else {
-                    adapter.clearList()
-                    setLayoutVis(noInternetLayout, true)
-                    setLayoutVis(notFoundLayout, false)
+                    binding.adapter.clearList()
+                    setLayoutVis(binding.noInternetLayout, true)
+                    setLayoutVis(binding.notFoundLayout, false)
                 }
             }
 
             override fun onFailure(call: Call<SearchResponse>, t: Throwable) {
-                progressBar.visibility = GONE
+                binding.progressBar.visibility = GONE
                 adapter.clearList()
-                setLayoutVis(noInternetLayout, true)
-                setLayoutVis(notFoundLayout, false)
+                setLayoutVis(binding.noInternetLayout, true)
+                setLayoutVis(binding.notFoundLayout, false)
             }
         })
     }
     fun readHistory() {
         historyTrackList.clear()
         historyTrackList.addAll(searchHistoryService.read())
-        historyAdapter.notifyItemRangeChanged(0, historyTrackList.size)
+        binding.historyAdapter.notifyItemRangeChanged(0, historyTrackList.size)
         Log.e("myLog", "readHistory + $historyTrackList")
     }
 
