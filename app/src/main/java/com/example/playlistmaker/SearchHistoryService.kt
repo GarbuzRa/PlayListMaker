@@ -1,6 +1,8 @@
 package com.example.playlistmaker
 
 import android.content.SharedPreferences
+import com.example.playlistmaker.domain.model.Track
+import com.example.playlistmaker.util.TRACK_HISTORY_KEY
 import com.google.gson.Gson
 
 class SearchHistoryService(sharedPreferences: SharedPreferences) {
