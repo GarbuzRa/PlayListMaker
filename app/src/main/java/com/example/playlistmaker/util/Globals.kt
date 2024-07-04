@@ -1,4 +1,4 @@
-package com.example.playlistmaker
+package com.example.playlistmaker.util
 
 const val IS_DARK_THEME_KEY = "is_dark_themes"
 const val APP_SETTINGS_FILENAME = "app_settings"
