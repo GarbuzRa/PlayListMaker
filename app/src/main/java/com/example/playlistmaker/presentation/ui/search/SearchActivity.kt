@@ -1,41 +1,41 @@
+// File: presentation/ui/search/SearchActivity.kt
+
 package com.example.playlistmaker.presentation.ui.search
 
 import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.playlistmaker.databinding.ActivitySearchBinding
 import com.example.playlistmaker.domain.model.Track
 import com.example.playlistmaker.presentation.ui.player.PlayerActivity
-import com.example.playlistmaker.util.Creator
+import com.example.playlistmaker.presentation.viewmodel.SearchViewModel
+import com.example.playlistmaker.presentation.viewmodel.SearchViewModelFactory
 import com.google.gson.Gson
 
 class SearchActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySearchBinding
+    private lateinit var viewModel: SearchViewModel
     private lateinit var adapter: TrackAdapter
     private lateinit var historyAdapter: TrackAdapter
-    private val trackRepository = Creator.provideTrackRepository(this)
-    private var tracksList = mutableListOf<Track>()
-    private var historyTrackList = mutableListOf<Track>()
-    private val handler = Handler(Looper.getMainLooper())
-    private var searchRunnable: Runnable? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySearchBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        viewModel = ViewModelProvider(this, SearchViewModelFactory()).get(SearchViewModel::class.java)
+
         setupViews()
         setupListeners()
         setupAdapters()
-        readHistory()
+        observeViewModel()
     }
 
     private fun setupViews() {
@@ -45,56 +45,71 @@ class SearchActivity : AppCompatActivity() {
 
     private fun setupListeners() {
         binding.searchBackButton.setOnClickListener { finish() }
-        binding.updateButton.setOnClickListener { onUpdateButtonClick() }
+        binding.updateButton.setOnClickListener { viewModel.searchTracks(binding.trackSearch.text.toString()) }
         binding.clearText.setOnClickListener { clearSearch() }
         binding.trackSearch.addTextChangedListener(createTextWatcher())
         binding.trackSearch.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
-                trackSearch(binding.trackSearch.text.toString())
+                viewModel.searchTracks(binding.trackSearch.text.toString())
                 true
             }
             false
         }
-        binding.historyClearButton.setOnClickListener {
-            trackRepository.clearSearchHistory()
-            setLayoutVis(binding.searchHistoryLayout, false)
-        }
+        binding.historyClearButton.setOnClickListener { viewModel.clearSearchHistory() }
     }
 
     private fun setupAdapters() {
-        historyAdapter = TrackAdapter(historyTrackList) { track ->
-            trackRepository.addToSearchHistory(track)
-            debounceClick { gotoPlayer(track) }
+        historyAdapter = TrackAdapter(mutableListOf()) { track ->
+            viewModel.addToSearchHistory(track)
+            gotoPlayer(track)
         }
         binding.searchHistoryRecycleView.adapter = historyAdapter
 
-        adapter = TrackAdapter(tracksList) { track ->
-            trackRepository.addToSearchHistory(track)
-            readHistory()
-            debounceClick { gotoPlayer(track) }
+        adapter = TrackAdapter(mutableListOf()) { track ->
+            viewModel.addToSearchHistory(track)
+            gotoPlayer(track)
         }
         binding.trackRecycler.adapter = adapter
+    }
+
+    private fun observeViewModel() {
+        viewModel.tracks.observe(this) { tracks ->
+            adapter.updateList(tracks.toMutableList())
+            binding.trackRecycler.visibility = View.VISIBLE
+        }
+
+        viewModel.historyTracks.observe(this) { tracks ->
+            historyAdapter.updateList(tracks.toMutableList())
+            binding.searchHistoryLayout.visibility = if (tracks.isNotEmpty()) View.VISIBLE else View.GONE
+        }
+
+        viewModel.isLoading.observe(this) { isLoading ->
+            if (isLoading)binding.trackRecycler.visibility = View.GONE
+            binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
+        }
+
+        viewModel.showError.observe(this) { showError ->
+            binding.noInternetLayout.visibility = if (showError) View.VISIBLE else View.GONE
+        }
+
+        viewModel.showEmpty.observe(this) { showEmpty ->
+            binding.notFoundLayout.visibility = if (showEmpty) View.VISIBLE else View.GONE
+        }
+
+        viewModel.getSearchHistory()
     }
 
     private fun createTextWatcher(): TextWatcher {
         return object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                if (s.toString().trim().isEmpty()) {
-                    binding.clearText.visibility = View.GONE
-                    readHistory()
-                    if (historyTrackList.isNotEmpty()) {
-                        setLayoutVis(binding.searchHistoryLayout, true)
-                    }
+                binding.clearText.visibility = if (s.isNullOrEmpty()) View.GONE else View.VISIBLE
+                if (s.isNullOrEmpty()) {
+                    binding.trackRecycler.visibility = View.GONE
+                    viewModel.getSearchHistory()
                 } else {
-                    setLayoutVis(binding.searchHistoryLayout, false)
-                    binding.clearText.visibility = View.VISIBLE
-                    adapter.clearList()
-                    setLayoutVis(binding.notFoundLayout, false)
-                    setLayoutVis(binding.noInternetLayout, false)
-                    searchRunnable?.let { handler.removeCallbacks(it) }
-                    searchRunnable = Runnable { trackSearch(s.toString()) }
-                    handler.postDelayed(searchRunnable!!, 2000L)
+                    binding.searchHistoryLayout.visibility = View.GONE
+                    viewModel.searchTracks(s.toString())
                 }
             }
             override fun afterTextChanged(s: Editable?) {}
@@ -105,14 +120,7 @@ class SearchActivity : AppCompatActivity() {
         binding.trackSearch.setText("")
         keyboardHide()
         adapter.clearList()
-        readHistory()
-        if (historyTrackList.isNotEmpty()) {
-            setLayoutVis(binding.searchHistoryLayout, true)
-        } else {
-            setLayoutVis(binding.searchHistoryLayout, false)
-        }
-        setLayoutVis(binding.notFoundLayout, false)
-        setLayoutVis(binding.noInternetLayout, false)
+        viewModel.getSearchHistory()
     }
 
     private fun keyboardHide() {
@@ -120,63 +128,9 @@ class SearchActivity : AppCompatActivity() {
         currentFocus?.let { inputMethod.hideSoftInputFromWindow(it.windowToken, 0) }
     }
 
-    private fun setLayoutVis(layout: View, vis: Boolean) {
-        layout.visibility = if (vis) View.VISIBLE else View.GONE
-    }
-
-    private fun onUpdateButtonClick() {
-        setLayoutVis(binding.notFoundLayout, false)
-        setLayoutVis(binding.noInternetLayout, false)
-        trackSearch(binding.trackSearch.text.toString())
-    }
-
-    private fun trackSearch(query: String) {
-        binding.progressBar.visibility = View.VISIBLE
-        trackRepository.searchTracks(query) { result ->
-            binding.progressBar.visibility = View.GONE
-            result.fold(
-                onSuccess = { tracks ->
-                    if (tracks.isNotEmpty()) {
-                        binding.trackRecycler.visibility = View.VISIBLE
-                        tracksList.clear()
-                        tracksList.addAll(tracks)
-                        adapter.updateList(tracksList)
-                        binding.trackRecycler.scrollToPosition(0)
-                    } else {
-                        adapter.clearList()
-                        setLayoutVis(binding.noInternetLayout, false)
-                        setLayoutVis(binding.notFoundLayout, true)
-                    }
-                },
-                onFailure = {
-                    adapter.clearList()
-                    setLayoutVis(binding.noInternetLayout, true)
-                    setLayoutVis(binding.notFoundLayout, false)
-                }
-            )
-        }
-    }
-
-    private fun readHistory() {
-        historyTrackList.clear()
-        historyTrackList.addAll(trackRepository.getSearchHistory())
-        historyAdapter.notifyDataSetChanged()
-        if (historyTrackList.isNotEmpty()) {
-            setLayoutVis(binding.searchHistoryLayout, true)
-        }
-    }
-
-    private fun debounceClick(action: () -> Unit) {
-        handler.postDelayed({ action() }, 300L)
-    }
-
     private fun gotoPlayer(track: Track) {
         val intent = Intent(this, PlayerActivity::class.java)
-        intent.putExtra(CURRENT_TRACK, Gson().toJson(track))
+        intent.putExtra(PlayerActivity.CURRENT_TRACK, Gson().toJson(track))
         startActivity(intent)
-    }
-
-    companion object {
-        const val CURRENT_TRACK = "current_track"
     }
 }

@@ -4,8 +4,7 @@ import android.media.MediaPlayer
 import com.example.playlistmaker.domain.model.Track
 import com.example.playlistmaker.domain.repository.PlayerRepository
 
-class PlayerRepositoryImpl():PlayerRepository {
-   private var mediaPlayer: MediaPlayer? = null
+class PlayerRepositoryImpl(private var mediaPlayer: MediaPlayer?):PlayerRepository {
 
     override fun preparePlayer(track: Track) { //ф-ия подготовки* плеера на основе трека
         //*подготовка - это запись ссылки на mp3 в класс медиаПлеер
@@ -31,7 +30,7 @@ class PlayerRepositoryImpl():PlayerRepository {
 
     override fun isPlaying(): Boolean {
         return mediaPlayer?.isPlaying ?: false //вернуть переменную isPlaying
-            //если mediaPlayer не null, вернуть false если null
+        //если mediaPlayer не null, вернуть false если null
     }
 
     override fun getCurrentPosition(): Int {
