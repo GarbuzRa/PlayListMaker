@@ -105,7 +105,7 @@ class PlayerActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        Creator.providePlayerRepository().releasePlayer()
+        viewModel.releasePlayer()
         handler.removeCallbacks(updateTimeTask)
     }
 

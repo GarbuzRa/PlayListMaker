@@ -3,6 +3,7 @@ package com.example.playlistmaker.presentation.viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.playlistmaker.ReleasePlayerUseCase
 import com.example.playlistmaker.domain.model.Track
 import com.example.playlistmaker.domain.usecase.GetTrackUseCase
 import com.example.playlistmaker.domain.usecase.PlayTrackUseCase
@@ -18,7 +19,8 @@ class PlayerViewModel(
     private val getTrackUseCase: GetTrackUseCase,
     private val playTrackUseCase: PlayTrackUseCase,
     private val pauseTrackUseCase: PauseTrackUseCase,
-    private val prepareTrackUseCase: PrepareTrackUseCase
+    private val prepareTrackUseCase: PrepareTrackUseCase,
+    private val releasePlayerUseCase: ReleasePlayerUseCase
 ) : ViewModel() {
 
     private val _trackData = MutableLiveData<TrackUiState>()
@@ -60,6 +62,10 @@ class PlayerViewModel(
 
     fun updateCurrentPosition(position: Int) {
         _currentPosition.value = SimpleDateFormat("mm:ss", Locale.getDefault()).format(position)
+    }
+
+    fun releasePlayer() {
+        releasePlayerUseCase()
     }
 
     data class TrackUiState(
