@@ -1,4 +1,4 @@
-package com.example.playlistmaker
+package com.example.playlistmaker.domain.usecase
 
 
 import com.example.playlistmaker.domain.repository.PlayerRepository

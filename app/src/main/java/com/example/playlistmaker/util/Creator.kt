@@ -17,6 +17,7 @@ import com.example.playlistmaker.domain.usecase.GetTrackUseCase
 import com.example.playlistmaker.domain.usecase.PauseTrackUseCase
 import com.example.playlistmaker.domain.usecase.PlayTrackUseCase
 import com.example.playlistmaker.domain.usecase.PrepareTrackUseCase
+import com.example.playlistmaker.domain.usecase.ReleasePlayerUseCase
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -78,6 +79,10 @@ object Creator { //в общем я так понимаю суть данног�
 
     fun providePrepareTrackUseCase(): PrepareTrackUseCase{
         return PrepareTrackUseCase(playerRepository)
+    }
+
+    fun provideReleasePlayerUseCase(): ReleasePlayerUseCase{
+        return ReleasePlayerUseCase(playerRepository)
     }
 
     fun provideAppSettings(): AppSettings {
