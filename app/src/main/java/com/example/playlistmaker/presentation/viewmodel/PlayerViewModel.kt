@@ -5,6 +5,7 @@ import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.playlistmaker.domain.repository.PlayerRepository
 import com.example.playlistmaker.domain.usecase.ReleasePlayerUseCase
 import com.example.playlistmaker.domain.usecase.GetTrackUseCase
 import com.example.playlistmaker.domain.usecase.PlayTrackUseCase
@@ -21,7 +22,8 @@ class PlayerViewModel(
     private val playTrackUseCase: PlayTrackUseCase,
     private val pauseTrackUseCase: PauseTrackUseCase,
     private val prepareTrackUseCase: PrepareTrackUseCase,
-    private val releasePlayerUseCase: ReleasePlayerUseCase
+    private val releasePlayerUseCase: ReleasePlayerUseCase,
+    private val playerRepository: PlayerRepository // Добавим это
 ) : ViewModel() {
 
     private val _trackData = MutableLiveData<TrackUiState>()
@@ -45,7 +47,14 @@ class PlayerViewModel(
 
     fun preparePlayer(trackId: String) {
         val track = getTrackUseCase(trackId)
-        if(track != null) prepareTrackUseCase(track)
+        if(track != null){
+            prepareTrackUseCase(track)
+            playerRepository.setOnCompletionListener {
+                _isPlaying.postValue(false)
+                _currentPosition.postValue("00:00")
+                handler.removeCallbacks(updateTimeTask)
+            }
+        }
         track?.let {
             _trackData.value = TrackUiState(
                 trackName = it.trackName,

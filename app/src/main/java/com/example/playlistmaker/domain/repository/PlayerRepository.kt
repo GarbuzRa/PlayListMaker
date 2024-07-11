@@ -18,4 +18,6 @@ interface PlayerRepository {
     fun isPlaying():Boolean//играет ли трек сейчас
 
     fun getCurrentPosition():Int//текущее время воспроизведения
+
+    fun setOnCompletionListener(listener: () -> Unit)
 }

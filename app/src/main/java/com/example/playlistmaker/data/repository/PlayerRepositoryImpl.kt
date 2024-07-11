@@ -38,4 +38,8 @@ class PlayerRepositoryImpl(private var mediaPlayer: MediaPlayer?):PlayerReposito
         //если mediaPlayer не null, вернуть 0 если null
     }
 
+    override fun setOnCompletionListener(listener: () -> Unit) {
+        mediaPlayer?.setOnCompletionListener { listener() }
+    }
+
 }
