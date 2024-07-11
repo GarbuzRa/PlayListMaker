@@ -6,11 +6,13 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.playlistmaker.domain.repository.PlayerRepository
+import com.example.playlistmaker.domain.usecase.GetCurrentPositionUseCase
 import com.example.playlistmaker.domain.usecase.ReleasePlayerUseCase
 import com.example.playlistmaker.domain.usecase.GetTrackUseCase
 import com.example.playlistmaker.domain.usecase.PlayTrackUseCase
 import com.example.playlistmaker.domain.usecase.PauseTrackUseCase
 import com.example.playlistmaker.domain.usecase.PrepareTrackUseCase
+import com.example.playlistmaker.domain.usecase.SetOnCompletionListenerUseCase
 import com.example.playlistmaker.util.Creator
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
@@ -23,7 +25,8 @@ class PlayerViewModel(
     private val pauseTrackUseCase: PauseTrackUseCase,
     private val prepareTrackUseCase: PrepareTrackUseCase,
     private val releasePlayerUseCase: ReleasePlayerUseCase,
-    private val playerRepository: PlayerRepository // Добавим это
+    private val getCurrentPositionUseCase: GetCurrentPositionUseCase,
+    private val setOnCompletionListenerUseCase: SetOnCompletionListenerUseCase
 ) : ViewModel() {
 
     private val _trackData = MutableLiveData<TrackUiState>()
@@ -49,7 +52,7 @@ class PlayerViewModel(
         val track = getTrackUseCase(trackId)
         if(track != null){
             prepareTrackUseCase(track)
-            playerRepository.setOnCompletionListener {
+            setOnCompletionListenerUseCase {
                 _isPlaying.postValue(false)
                 _currentPosition.postValue("00:00")
                 handler.removeCallbacks(updateTimeTask)
@@ -83,7 +86,7 @@ class PlayerViewModel(
     }
 
     private fun updateCurrentPosition() {
-        val position = Creator.providePlayerRepository().getCurrentPosition()
+        val position = getCurrentPositionUseCase()
         _currentPosition.value = SimpleDateFormat("mm:ss", Locale.getDefault()).format(position)
     }
 

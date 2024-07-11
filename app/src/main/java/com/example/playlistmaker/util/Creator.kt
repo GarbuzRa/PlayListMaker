@@ -13,11 +13,13 @@ import com.example.playlistmaker.data.repository.TrackRepositoryImpl
 import com.example.playlistmaker.data.storage.SharedPreferencesStorage
 import com.example.playlistmaker.domain.repository.PlayerRepository
 import com.example.playlistmaker.domain.repository.TrackRepository
+import com.example.playlistmaker.domain.usecase.GetCurrentPositionUseCase
 import com.example.playlistmaker.domain.usecase.GetTrackUseCase
 import com.example.playlistmaker.domain.usecase.PauseTrackUseCase
 import com.example.playlistmaker.domain.usecase.PlayTrackUseCase
 import com.example.playlistmaker.domain.usecase.PrepareTrackUseCase
 import com.example.playlistmaker.domain.usecase.ReleasePlayerUseCase
+import com.example.playlistmaker.domain.usecase.SetOnCompletionListenerUseCase
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -100,6 +102,14 @@ object Creator { //в общем я так понимаю суть данног�
             .centerCrop()
             .transform(RoundedCorners(cornerRadius))
             .into(imageView)
+    }
+
+    fun provideGetCurrentPositionUseCase(): GetCurrentPositionUseCase {
+        return GetCurrentPositionUseCase(playerRepository)
+    }
+
+    fun provideSetOnCompletionListenerUseCase(): SetOnCompletionListenerUseCase {
+        return SetOnCompletionListenerUseCase(playerRepository)
     }
 
 

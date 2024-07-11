@@ -13,7 +13,8 @@ class PlayerViewModelFactory : ViewModelProvider.Factory {
                 Creator.providePauseTrackUseCase(),
                 Creator.providePrepareTrackUseCase(),
                 Creator.provideReleasePlayerUseCase(),
-                Creator.providePlayerRepository()
+                Creator.provideGetCurrentPositionUseCase(),
+                Creator.provideSetOnCompletionListenerUseCase()
             ) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
