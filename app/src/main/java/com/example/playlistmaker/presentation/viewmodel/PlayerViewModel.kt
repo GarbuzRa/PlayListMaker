@@ -83,6 +83,14 @@ class PlayerViewModel(
         handler.removeCallbacks(updateTimeTask)
     }
 
+    fun onPause() {
+        if (_isPlaying.value == true) {
+            pauseTrackUseCase()
+            _isPlaying.value = false
+            handler.removeCallbacks(updateTimeTask)
+        }
+    }
+
     data class TrackUiState(
         val trackName: String,
         val artistName: String,

@@ -86,6 +86,11 @@ class PlayerActivity : AppCompatActivity() {
         viewModel.releasePlayer()
     }
 
+    override fun onPause() {
+        super.onPause()
+        viewModel.onPause()
+    }
+
     companion object {
         const val CURRENT_TRACK = "current_track"
     }
