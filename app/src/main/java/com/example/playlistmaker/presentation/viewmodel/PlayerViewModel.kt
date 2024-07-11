@@ -1,5 +1,7 @@
 package com.example.playlistmaker.presentation.viewmodel
 
+import android.os.Handler
+import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -8,6 +10,7 @@ import com.example.playlistmaker.domain.usecase.GetTrackUseCase
 import com.example.playlistmaker.domain.usecase.PlayTrackUseCase
 import com.example.playlistmaker.domain.usecase.PauseTrackUseCase
 import com.example.playlistmaker.domain.usecase.PrepareTrackUseCase
+import com.example.playlistmaker.util.Creator
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -29,6 +32,16 @@ class PlayerViewModel(
 
     private val _currentPosition = MutableLiveData<String>()
     val currentPosition: LiveData<String> = _currentPosition
+
+    private val handler = Handler(Looper.getMainLooper())
+    private val updateTimeTask = object : Runnable {
+        override fun run() {
+            updateCurrentPosition()
+            if (_isPlaying.value == true) {
+                handler.postDelayed(this, 500L)
+            }
+        }
+    }
 
     fun preparePlayer(trackId: String) {
         val track = getTrackUseCase(trackId)
@@ -52,18 +65,22 @@ class PlayerViewModel(
         if (_isPlaying.value == true) {
             pauseTrackUseCase()
             _isPlaying.value = false
+            handler.removeCallbacks(updateTimeTask)
         } else {
             playTrackUseCase()
             _isPlaying.value = true
+            handler.post(updateTimeTask)
         }
     }
 
-    fun updateCurrentPosition(position: Int) {
+    private fun updateCurrentPosition() {
+        val position = Creator.providePlayerRepository().getCurrentPosition()
         _currentPosition.value = SimpleDateFormat("mm:ss", Locale.getDefault()).format(position)
     }
 
     fun releasePlayer() {
         releasePlayerUseCase()
+        handler.removeCallbacks(updateTimeTask)
     }
 
     data class TrackUiState(

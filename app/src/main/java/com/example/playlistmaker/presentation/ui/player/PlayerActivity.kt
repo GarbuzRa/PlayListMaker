@@ -20,7 +20,6 @@ import com.google.gson.Gson
 class PlayerActivity : AppCompatActivity() {
     private lateinit var binding: ActivityPlayerBinding
     private lateinit var viewModel: PlayerViewModel
-    private lateinit var handler: Handler
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,14 +28,11 @@ class PlayerActivity : AppCompatActivity() {
 
         viewModel = ViewModelProvider(this, PlayerViewModelFactory()).get(PlayerViewModel::class.java)
 
-        handler = Handler(Looper.getMainLooper())
-
-        val trackJson = intent.getStringExtra(CURRENT_TRACK)
-        val track = Gson().fromJson(trackJson, Track::class.java)
-
         setupListeners()
         observeViewModel()
 
+        val trackJson = intent.getStringExtra(CURRENT_TRACK)
+        val track = Gson().fromJson(trackJson, Track::class.java)
         viewModel.preparePlayer(track.trackId)
     }
 
@@ -72,11 +68,6 @@ class PlayerActivity : AppCompatActivity() {
 
         viewModel.isPlaying.observe(this) { isPlaying ->
             binding.playImageView.setImageResource(if (isPlaying) R.drawable.pause else R.drawable.play)
-            if (isPlaying) {
-                startPlayback()
-            } else {
-                pausePlayback()
-            }
         }
 
         viewModel.currentPosition.observe(this) { position ->
@@ -88,25 +79,11 @@ class PlayerActivity : AppCompatActivity() {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 
-    private fun startPlayback() {
-        handler.post(updateTimeTask)
-    }
 
-    private fun pausePlayback() {
-        handler.removeCallbacks(updateTimeTask)
-    }
-
-    private val updateTimeTask = object : Runnable {
-        override fun run() {
-            viewModel.updateCurrentPosition(Creator.providePlayerRepository().getCurrentPosition())
-            handler.postDelayed(this, 500L)
-        }
-    }
 
     override fun onDestroy() {
         super.onDestroy()
         viewModel.releasePlayer()
-        handler.removeCallbacks(updateTimeTask)
     }
 
     companion object {
