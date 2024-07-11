@@ -10,9 +10,11 @@ import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.playlistmaker.databinding.ActivitySearchBinding
+import com.example.playlistmaker.domain.model.SearchState
 import com.example.playlistmaker.domain.model.Track
 import com.example.playlistmaker.presentation.ui.player.PlayerActivity
 import com.example.playlistmaker.presentation.viewmodel.SearchViewModel
@@ -78,9 +80,51 @@ class SearchActivity : AppCompatActivity() {
             binding.trackRecycler.visibility = View.VISIBLE
         }
 
+        viewModel.searchState.observe(this) { state ->
+            when (state) {
+                is SearchState.ShowHistory -> {
+                    binding.searchHistoryLayout.visibility = View.VISIBLE
+                    binding.trackRecycler.visibility = View.GONE
+                    binding.progressBar.visibility = View.GONE
+                    binding.noInternetLayout.visibility = View.GONE
+                    binding.notFoundLayout.visibility = View.GONE
+                }
+                is SearchState.Loading -> {
+                    binding.progressBar.visibility = View.VISIBLE
+                    binding.trackRecycler.visibility = View.GONE
+                    binding.searchHistoryLayout.visibility = View.GONE
+                    binding.noInternetLayout.visibility = View.GONE
+                    binding.notFoundLayout.visibility = View.GONE
+                }
+                is SearchState.ShowSearchResults -> {
+                    binding.trackRecycler.visibility = View.VISIBLE
+                    binding.progressBar.visibility = View.GONE
+                    binding.searchHistoryLayout.visibility = View.GONE
+                    binding.noInternetLayout.visibility = View.GONE
+                    binding.notFoundLayout.visibility = View.GONE
+                    adapter.updateList(state.tracks.toMutableList())
+                }
+                is SearchState.Error -> {
+                    binding.noInternetLayout.visibility = View.VISIBLE
+                    binding.trackRecycler.visibility = View.GONE
+                    binding.progressBar.visibility = View.GONE
+                    binding.searchHistoryLayout.visibility = View.GONE
+                    binding.notFoundLayout.visibility = View.GONE
+                }
+                is SearchState.Empty -> {
+                    binding.notFoundLayout.visibility = View.VISIBLE
+                    binding.trackRecycler.visibility = View.GONE
+                    binding.progressBar.visibility = View.GONE
+                    binding.searchHistoryLayout.visibility = View.GONE
+                    binding.noInternetLayout.visibility = View.GONE
+                }
+            }
+        }
+
         viewModel.historyTracks.observe(this) { tracks ->
             historyAdapter.updateList(tracks.toMutableList())
-            binding.searchHistoryLayout.visibility = if (tracks.isNotEmpty()) View.VISIBLE else View.GONE
+            binding.searchHistoryLayout.isVisible = tracks.isNotEmpty()
+            binding.historyClearButton.isVisible = tracks.isNotEmpty()
         }
 
         viewModel.isLoading.observe(this) { isLoading ->
