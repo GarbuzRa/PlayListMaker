@@ -4,21 +4,27 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.lifecycle.ViewModelProvider
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.ActivitySettingsBinding
-import com.example.playlistmaker.util.Creator
+import com.example.playlistmaker.presentation.viewmodel.SettingsViewModel
+import com.example.playlistmaker.presentation.viewmodel.SettingsViewModelFactory
 
 class SettingsActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySettingsBinding
-    private val appSettings = Creator.provideAppSettings()
+    private lateinit var viewModel: SettingsViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySettingsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        viewModel = ViewModelProvider(this, SettingsViewModelFactory()).get(SettingsViewModel::class.java)
+
         setupListeners()
         setupThemeSwitch()
+        observeViewModel()
     }
 
     private fun setupListeners() {
@@ -49,10 +55,23 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     private fun setupThemeSwitch() {
-        binding.themeSwitch.isChecked = appSettings.isDarkMode
         binding.themeSwitch.setOnCheckedChangeListener { _, isChecked ->
-            appSettings.isDarkMode = isChecked
-            appSettings.themeToggle(isChecked)
+            viewModel.setDarkMode(isChecked)
+        }
+    }
+
+    private fun observeViewModel() {
+        viewModel.isDarkMode.observe(this) { isDarkMode ->
+            binding.themeSwitch.isChecked = isDarkMode
+            applyTheme(isDarkMode)
+        }
+    }
+
+    private fun applyTheme(isDarkMode: Boolean) {
+        if (isDarkMode) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+        } else {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         }
     }
 }

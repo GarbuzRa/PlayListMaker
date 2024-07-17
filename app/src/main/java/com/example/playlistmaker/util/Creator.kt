@@ -1,16 +1,29 @@
 package com.example.playlistmaker.util
 
 import android.content.Context
+import android.content.SharedPreferences
+import android.media.MediaPlayer
+import android.widget.ImageView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.app.AppSettings
 import com.example.playlistmaker.data.remote.ItunesApiService
 import com.example.playlistmaker.data.repository.PlayerRepositoryImpl
+import com.example.playlistmaker.data.repository.SettingsRepositoryImpl
 import com.example.playlistmaker.data.repository.TrackRepositoryImpl
 import com.example.playlistmaker.data.storage.SharedPreferencesStorage
 import com.example.playlistmaker.domain.repository.PlayerRepository
+import com.example.playlistmaker.domain.repository.SettingsRepository
 import com.example.playlistmaker.domain.repository.TrackRepository
+import com.example.playlistmaker.domain.usecase.GetCurrentPositionUseCase
+import com.example.playlistmaker.domain.usecase.GetThemeSettingsUseCase
 import com.example.playlistmaker.domain.usecase.GetTrackUseCase
 import com.example.playlistmaker.domain.usecase.PauseTrackUseCase
 import com.example.playlistmaker.domain.usecase.PlayTrackUseCase
+import com.example.playlistmaker.domain.usecase.PrepareTrackUseCase
+import com.example.playlistmaker.domain.usecase.ReleasePlayerUseCase
+import com.example.playlistmaker.domain.usecase.SetOnCompletionListenerUseCase
+import com.example.playlistmaker.domain.usecase.SetThemeSettingsUseCase
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -18,6 +31,8 @@ object Creator { //в общем я так понимаю суть данног�
     // создавать что-либо внутри себя, а потом предоставлять это другим
     private lateinit var appContext: Context //переменная которая принимает в себя класс Context
     // и будет инициализированна позже
+
+    private var mediaPlayer = MediaPlayer()
 
     fun init(context: Context) { //ф-ия принимает в себя контекст и сохраняет его в переменную (я хз зачем)
         appContext = context.applicationContext
@@ -29,6 +44,10 @@ object Creator { //в общем я так понимаю суть данног�
             .baseUrl("https://itunes.apple.com")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
+    }
+
+    private val settingsRepository: SettingsRepository by lazy {
+        SettingsRepositoryImpl(appContext.getSharedPreferences(APP_SETTINGS_FILENAME, Context.MODE_PRIVATE))
     }
 
     private val itunesApiService: ItunesApiService by lazy { //создается объект сервиса при помощи ретрофита
@@ -44,11 +63,11 @@ object Creator { //в общем я так понимаю суть данног�
     }
 
     private val playerRepository: PlayerRepository by lazy {
-        PlayerRepositoryImpl()
+        PlayerRepositoryImpl(mediaPlayer)
     }
     //ну вот тут просто два репозитория создается, один для плеера, другой для работы с треками
 
-    fun provideTrackRepository(context: Context): TrackRepository {
+    fun provideTrackRepository(): TrackRepository {
         return trackRepository //возвращает объект
     }
 
@@ -68,8 +87,47 @@ object Creator { //в общем я так понимаю суть данног�
         return PauseTrackUseCase(playerRepository)
     }
 
+    fun providePrepareTrackUseCase(): PrepareTrackUseCase{
+        return PrepareTrackUseCase(playerRepository)
+    }
+
+    fun provideReleasePlayerUseCase(): ReleasePlayerUseCase{
+        return ReleasePlayerUseCase(playerRepository)
+    }
+
     fun provideAppSettings(): AppSettings {
         return appContext as AppSettings
     }
+
+    fun provideSharedPreferences(): SharedPreferences {
+        return appContext.getSharedPreferences(APP_SETTINGS_FILENAME, Context.MODE_PRIVATE)
+    }
+
+    fun loadImage(context: Context, url: String, imageView: ImageView, placeholder: Int, cornerRadius: Int) {
+        Glide.with(context)
+            .load(url)
+            .placeholder(placeholder)
+            .centerCrop()
+            .transform(RoundedCorners(cornerRadius))
+            .into(imageView)
+    }
+
+    fun provideGetCurrentPositionUseCase(): GetCurrentPositionUseCase {
+        return GetCurrentPositionUseCase(playerRepository)
+    }
+
+    fun provideSetOnCompletionListenerUseCase(): SetOnCompletionListenerUseCase {
+        return SetOnCompletionListenerUseCase(playerRepository)
+    }
+
+    fun provideGetThemeSettingsUseCase(): GetThemeSettingsUseCase {
+        return GetThemeSettingsUseCase(settingsRepository)
+    }
+
+    fun provideSetThemeSettingsUseCase(): SetThemeSettingsUseCase {
+        return SetThemeSettingsUseCase(settingsRepository)
+    }
+
+
 }
 //короче все они просто возвращают объекты, но так как я не вижу всей картины происходящего, то ваще хз для чего
