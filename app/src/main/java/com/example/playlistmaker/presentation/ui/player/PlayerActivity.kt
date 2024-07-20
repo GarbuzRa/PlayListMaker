@@ -13,20 +13,17 @@ import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.ActivityPlayerBinding
 import com.example.playlistmaker.domain.model.Track
 import com.example.playlistmaker.presentation.viewmodel.PlayerViewModel
-import com.example.playlistmaker.presentation.viewmodel.PlayerViewModelFactory
-import com.example.playlistmaker.util.Creator
 import com.google.gson.Gson
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class PlayerActivity : AppCompatActivity() {
     private lateinit var binding: ActivityPlayerBinding
-    private lateinit var viewModel: PlayerViewModel
+    private val viewModel: PlayerViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityPlayerBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        viewModel = ViewModelProvider(this, PlayerViewModelFactory()).get(PlayerViewModel::class.java)
 
         setupListeners()
         observeViewModel()
@@ -57,13 +54,11 @@ class PlayerActivity : AppCompatActivity() {
             binding.trackLengthTextView.text = trackUiState.trackTimeMillis
             binding.trackYearTextView.text = trackUiState.releaseDate
 
-            Creator.loadImage(
-                this,
-                trackUiState.artworkUrl,
-                binding.coverImageView,
-                R.drawable.placeholder,
-                15
-            )
+            Glide.with(this)
+                .load(trackUiState.artworkUrl)
+                .placeholder(R.drawable.placeholder)
+                .transform(RoundedCorners(15))
+                .into(binding.coverImageView)
         }
 
         viewModel.isPlaying.observe(this) { isPlaying ->

@@ -3,19 +3,29 @@ package com.example.playlistmaker.app
 
 import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
-import com.example.playlistmaker.util.Creator
+import com.example.playlistmaker.di.dataModule
+import com.example.playlistmaker.di.domainModule
+import com.example.playlistmaker.di.viewModelModule
 import com.example.playlistmaker.domain.usecase.GetThemeSettingsUseCase
 import com.example.playlistmaker.domain.usecase.SetThemeSettingsUseCase
+import org.koin.android.ext.koin.androidContext
+import org.koin.android.ext.koin.androidLogger
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
+import org.koin.core.context.startKoin
 
-class AppSettings : Application() {
-    private lateinit var getThemeSettingsUseCase: GetThemeSettingsUseCase
-    private lateinit var setThemeSettingsUseCase: SetThemeSettingsUseCase
+class AppSettings : Application(), KoinComponent {
+    private val getThemeSettingsUseCase: GetThemeSettingsUseCase by inject()
+    private val setThemeSettingsUseCase: SetThemeSettingsUseCase by inject()
 
     override fun onCreate() {
         super.onCreate()
-        Creator.init(this) // Initialize the Creator here
-        getThemeSettingsUseCase = Creator.provideGetThemeSettingsUseCase()
-        setThemeSettingsUseCase = Creator.provideSetThemeSettingsUseCase()
+
+        startKoin {
+            androidLogger()
+            androidContext(this@AppSettings)
+            modules(dataModule, domainModule, viewModelModule)
+        }
 
         val isDarkMode = getThemeSettingsUseCase.execute()
         themeToggle(isDarkMode)
