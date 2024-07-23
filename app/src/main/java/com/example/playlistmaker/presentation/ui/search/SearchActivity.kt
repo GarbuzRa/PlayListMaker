@@ -18,12 +18,12 @@ import com.example.playlistmaker.domain.model.SearchState
 import com.example.playlistmaker.domain.model.Track
 import com.example.playlistmaker.presentation.ui.player.PlayerActivity
 import com.example.playlistmaker.presentation.viewmodel.SearchViewModel
-import com.example.playlistmaker.presentation.viewmodel.SearchViewModelFactory
 import com.google.gson.Gson
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SearchActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySearchBinding
-    private lateinit var viewModel: SearchViewModel
+    private val viewModel: SearchViewModel by viewModel()
     private lateinit var adapter: TrackAdapter
     private lateinit var historyAdapter: TrackAdapter
 
@@ -31,8 +31,6 @@ class SearchActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivitySearchBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        viewModel = ViewModelProvider(this, SearchViewModelFactory()).get(SearchViewModel::class.java)
 
         setupViews()
         setupListeners()
