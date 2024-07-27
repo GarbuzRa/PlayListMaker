@@ -23,6 +23,9 @@ import com.example.playlistmaker.domain.usecase.ReleasePlayerUseCase
 import com.example.playlistmaker.domain.usecase.SearchTracksUseCase
 import com.example.playlistmaker.domain.usecase.SetOnCompletionListenerUseCase
 import com.example.playlistmaker.domain.usecase.SetThemeSettingsUseCase
+import com.example.playlistmaker.presentation.viewmodel.FavoriteTracksViewModel
+import com.example.playlistmaker.presentation.viewmodel.MediatekaViewModel
+import com.example.playlistmaker.presentation.viewmodel.PlayListViewModel
 import com.example.playlistmaker.presentation.viewmodel.PlayerViewModel
 import com.example.playlistmaker.presentation.viewmodel.SearchViewModel
 import com.example.playlistmaker.presentation.viewmodel.SettingsViewModel
@@ -68,6 +71,9 @@ val domainModule = module{
 }
 
 val viewModelModule = module{
+    viewModel {MediatekaViewModel()}
+    viewModel {FavoriteTracksViewModel()}
+    viewModel {PlayListViewModel()}
     viewModel { PlayerViewModel(get(),get(),get(),get(),get(),get(),get())}
     viewModel { SearchViewModel(get(),get(),get(),get())}
     viewModel { SettingsViewModel(get(),get())}

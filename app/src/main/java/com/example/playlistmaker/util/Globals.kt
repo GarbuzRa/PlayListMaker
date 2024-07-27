@@ -5,6 +5,7 @@ const val APP_SETTINGS_FILENAME = "app_settings"
 const val TRACK_HISTORY_FILENAME = "track_history_filename"
 const val TRACK_HISTORY_KEY = "track_history_key"
 const val CURRENT_TRACK = "current_track"
+const val TAB_COUNT = 2
 
 class Globals {
 }

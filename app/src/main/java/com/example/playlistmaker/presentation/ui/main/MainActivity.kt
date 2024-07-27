@@ -7,6 +7,7 @@ import com.example.playlistmaker.databinding.ActivityMainBinding
 import com.example.playlistmaker.presentation.ui.search.SearchActivity
 import com.example.playlistmaker.presentation.ui.settings.SettingsActivity
 import com.example.playlistmaker.presentation.ui.library.LibraryActivity
+import com.example.playlistmaker.presentation.ui.mediateka.MediatekaActivity
 
 class MainActivity : AppCompatActivity() {
     lateinit var binding: ActivityMainBinding
@@ -21,7 +22,7 @@ class MainActivity : AppCompatActivity() {
 
 
         binding.libraryButton.setOnClickListener {
-            val libraryIntent = Intent(this, LibraryActivity::class.java)
+            val libraryIntent = Intent(this, MediatekaActivity::class.java)
             startActivity(libraryIntent)
         }
 
