@@ -9,7 +9,7 @@
     <string name="userDocument">User agreement</string>
     <string name="settings">Settings</string>
     <string name="dark_theme">Dark Theme</string>
-    <string name="not_loaded">Loaded Failed. Check your \\n internet connection</string>
+    <string name="not_loaded">Loaded Failed. Check your \n internet connection</string>
     <string name="update">Update</string>
     <string name="connection_problem">Connection Problem</string>
     <string name="not_found">Track not found</string>
@@ -20,4 +20,10 @@
     <string name="year">Year</string>
     <string name="genre">Genre</string>
     <string name="country">Country</string>
+    <string name="mediateka">Mediateka</string>
+    <string name="mediateka_empty">Your mediateka is empty</string>
+    <string name="no_play_list">You have \n no playlists</string>
+    <string name="new_play_list">New playlist</string>
+    <string name="favorite_tracks">Favorite Tracks</string>
+    <string name="playlists">Playlist</string>
 </resources>

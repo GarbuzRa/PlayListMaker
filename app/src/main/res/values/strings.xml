@@ -28,4 +28,11 @@
     <string name="play_clicked" translatable="false">Нажата кнопка Play</string>
     <string name="added_to_liked" translatable="false">%1$s добавлен в Понравившиеся</string>
     <string name="added_to_library" translatable="false">%1$s добавлен в библиотеку</string>
+    <string name="mediateka">Медиатека</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="mediateka_empty">Ваша медиатека пуста</string>
+    <string name="no_play_list">Вы не создали\nни одного плейлиста</string>
+    <string name="new_play_list">Новый плейлист</string>
+    <string name="favorite_tracks">Избранные треки</string>
+    <string name="playlists">Плейлисты</string>
 </resources>
