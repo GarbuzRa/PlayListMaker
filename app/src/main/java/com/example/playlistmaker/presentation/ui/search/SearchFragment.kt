@@ -2,6 +2,7 @@
 
 package com.example.playlistmaker.presentation.ui.search
 
+import android.content.Context.INPUT_METHOD_SERVICE
 import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
@@ -179,11 +180,11 @@ class SearchFragment : Fragment() {
 
     private fun keyboardHide() {
         val inputMethod = requireActivity().getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
-        currentFocus?.let { inputMethod.hideSoftInputFromWindow(it.windowToken, 0) }
+        view?.let { inputMethod.hideSoftInputFromWindow(it.windowToken, 0) }
     }
 
     private fun gotoPlayer(track: Track) {
-        val intent = Intent(this, PlayerActivity::class.java)
+        val intent = Intent(requireContext(), PlayerActivity::class.java)
         intent.putExtra(PlayerActivity.CURRENT_TRACK, Gson().toJson(track))
         startActivity(intent)
     }
