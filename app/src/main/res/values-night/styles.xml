@@ -154,5 +154,10 @@
         <item name="itemTextColor">@drawable/bottom_nav_selector_night</item>
         <item name="backgroundTint">@color/yp_black</item>
     </style>
+
+    <style name="bottom_divider_style">
+        <item name="android:background">@color/white</item>
+    </style>
+
 </resources>
 

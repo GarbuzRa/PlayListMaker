@@ -8,9 +8,6 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.NavigationUI
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.ActivityMainBinding
-import com.example.playlistmaker.presentation.ui.search.SearchActivity
-import com.example.playlistmaker.presentation.ui.settings.SettingsActivity
-import com.example.playlistmaker.presentation.ui.mediateka.MediatekaActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : AppCompatActivity() {
