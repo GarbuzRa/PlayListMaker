@@ -36,7 +36,9 @@
         app:itemTextAppearanceActive="@style/BottomNavigationTextAppearance"
         app:itemTextAppearanceInactive="@style/BottomNavigationTextAppearance"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:itemIconSize="18dp"
+        app:itemIconSize="24dp"
+        app:itemPaddingTop="10dp"
+        app:itemPaddingBottom="10dp"
         app:menu="@menu/bottom_navigation_menu"
         app:itemActiveIndicatorStyle="@style/Widget.Design.BottomNavigationView"/>
 
