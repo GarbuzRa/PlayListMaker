@@ -148,5 +148,16 @@
         <item name="tabIndicatorColor">@color/white</item>
         <item name="textAllCaps">false</item>
     </style>
+
+    <style name="bottom_nav_view">
+        <item name="itemIconTint">@drawable/bottom_nav_selector_night</item>
+        <item name="itemTextColor">@drawable/bottom_nav_selector_night</item>
+        <item name="backgroundTint">@color/yp_black</item>
+    </style>
+
+    <style name="bottom_divider_style">
+        <item name="android:background">@color/white</item>
+    </style>
+
 </resources>
 
