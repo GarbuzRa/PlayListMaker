@@ -5,6 +5,7 @@ import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.playlistmaker.domain.repository.PlayerRepository
 import com.example.playlistmaker.domain.usecase.GetCurrentPositionUseCase
 import com.example.playlistmaker.domain.usecase.ReleasePlayerUseCase
@@ -13,6 +14,9 @@ import com.example.playlistmaker.domain.usecase.PlayTrackUseCase
 import com.example.playlistmaker.domain.usecase.PauseTrackUseCase
 import com.example.playlistmaker.domain.usecase.PrepareTrackUseCase
 import com.example.playlistmaker.domain.usecase.SetOnCompletionListenerUseCase
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -37,15 +41,7 @@ class PlayerViewModel(
     private val _currentPosition = MutableLiveData<String>()
     val currentPosition: LiveData<String> = _currentPosition
 
-    private val handler = Handler(Looper.getMainLooper())
-    private val updateTimeTask = object : Runnable {
-        override fun run() {
-            updateCurrentPosition()
-            if (_isPlaying.value == true) {
-                handler.postDelayed(this, 500L)
-            }
-        }
-    }
+    private var updateJob: Job? = null
 
     fun preparePlayer(trackId: String) {
         val track = getTrackUseCase(trackId)
@@ -54,21 +50,20 @@ class PlayerViewModel(
             setOnCompletionListenerUseCase {
                 _isPlaying.postValue(false)
                 _currentPosition.postValue("00:00")
-                handler.removeCallbacks(updateTimeTask)
+                updateJob?.cancel()
             }
-        }
-        track?.let {
             _trackData.value = TrackUiState(
-                trackName = it.trackName,
-                artistName = it.artistName,
-                trackTimeMillis = SimpleDateFormat("mm:ss", Locale.getDefault()).format(it.trackTimeMillis),
-                artworkUrl = it.artworkUrl100.replaceAfterLast('/', "512x512bb.jpg"),
-                collectionName = it.collectionName,
-                releaseDate = LocalDateTime.parse(it.releaseDate, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'")).year.toString(),
-                primaryGenreName = it.primaryGenreName,
-                country = it.country
+                trackName = track.trackName,
+                artistName = track.artistName,
+                trackTimeMillis = SimpleDateFormat("mm:ss", Locale.getDefault()).format(track.trackTimeMillis),
+                artworkUrl = track.artworkUrl100.replaceAfterLast('/', "512x512bb.jpg"),
+                collectionName = track.collectionName,
+                releaseDate = LocalDateTime.parse(track.releaseDate, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'")).year.toString(),
+                primaryGenreName = track.primaryGenreName,
+                country = track.country
             )
         }
+
         _currentPosition.value = "00:00"
     }
 
@@ -76,11 +71,21 @@ class PlayerViewModel(
         if (_isPlaying.value == true) {
             pauseTrackUseCase()
             _isPlaying.value = false
-            handler.removeCallbacks(updateTimeTask)
+            updateJob?.cancel()
         } else {
             playTrackUseCase()
             _isPlaying.value = true
-            handler.post(updateTimeTask)
+            startTimerCoroutine()
+        }
+    }
+
+    fun startTimerCoroutine () {
+        updateJob?.cancel()
+        updateJob = viewModelScope.launch {
+            while (true) {
+                updateCurrentPosition()
+                delay(500)
+            }
         }
     }
 
@@ -91,14 +96,14 @@ class PlayerViewModel(
 
     fun releasePlayer() {
         releasePlayerUseCase()
-        handler.removeCallbacks(updateTimeTask)
+        updateJob?.cancel()
     }
 
     fun onPause() {
         if (_isPlaying.value == true) {
             pauseTrackUseCase()
             _isPlaying.value = false
-            handler.removeCallbacks(updateTimeTask)
+            updateJob?.cancel()
         }
     }
 
