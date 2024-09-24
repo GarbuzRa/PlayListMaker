@@ -61,18 +61,21 @@ class SearchViewModel(private val searchTracksUseCase: SearchTracksUseCase,
                 )
             }
         }
-
-
     }
 
     fun getSearchHistory() {
         _historyTracks.value = getSearchHistoryUseCase.execute()
-        _searchState.value = SearchState.ShowHistory
+        if(_historyTracks.value.isNullOrEmpty()){
+            _searchState.value = SearchState.NoHistory
+        }
+        else{
+            _searchState.value = SearchState.ShowHistory
+        }
+
     }
 
     fun addToSearchHistory(track: Track) {
         addToSearchHistoryUseCase.execute(track)
-        getSearchHistory()
     }
 
     fun clearSearchHistory() {

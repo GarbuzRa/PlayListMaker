@@ -6,6 +6,7 @@
         <item name="playPauseColor">@color/white</item>
         <item name="searchIconColor">#1A1B22</item>
         <item name="clearIconColor">@color/yp_black</item>
+        <item name="playerSideIconColor">#C5C6C7</item>
         <!-- Customize your dark theme here. -->
         <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
     </style>

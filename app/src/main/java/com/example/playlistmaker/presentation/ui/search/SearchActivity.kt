@@ -116,6 +116,13 @@ class SearchActivity : AppCompatActivity() {
                     binding.searchHistoryLayout.visibility = View.GONE
                     binding.noInternetLayout.visibility = View.GONE
                 }
+                is SearchState.NoHistory -> {
+                    binding.searchHistoryLayout.visibility = View.GONE
+                    binding.trackRecycler.visibility = View.GONE
+                    binding.progressBar.visibility = View.GONE
+                    binding.noInternetLayout.visibility = View.GONE
+                    binding.notFoundLayout.visibility = View.GONE
+                }
             }
         }
 
