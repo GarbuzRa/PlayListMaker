@@ -12,13 +12,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.playlistmaker.databinding.ActivitySearchBinding
 import com.example.playlistmaker.databinding.FragmentSearchBinding
 import com.example.playlistmaker.domain.model.SearchState
 import com.example.playlistmaker.domain.model.Track
@@ -48,9 +45,7 @@ class SearchFragment : Fragment() {
         setupListeners()
         setupAdapters()
         observeViewModel()
-
     }
-
 
     private fun setupViews() {
         binding.searchHistoryRecycleView.visibility = View.VISIBLE
@@ -65,15 +60,15 @@ class SearchFragment : Fragment() {
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 viewModel.searchTracks(binding.trackSearch.text.toString())
                 true
+            } else {
+                false
             }
-            false
         }
         binding.historyClearButton.setOnClickListener { viewModel.clearSearchHistory() }
     }
 
     private fun setupAdapters() {
         historyAdapter = TrackAdapter(mutableListOf()) { track ->
-            viewModel.addToSearchHistory(track)
             gotoPlayer(track)
         }
         binding.searchHistoryRecycleView.adapter = historyAdapter
@@ -94,11 +89,13 @@ class SearchFragment : Fragment() {
         viewModel.searchState.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is SearchState.ShowHistory -> {
-                    binding.searchHistoryLayout.visibility = View.VISIBLE
-                    binding.trackRecycler.visibility = View.GONE
-                    binding.progressBar.visibility = View.GONE
-                    binding.noInternetLayout.visibility = View.GONE
-                    binding.notFoundLayout.visibility = View.GONE
+                    if (binding.trackSearch.text.isNullOrEmpty()) {
+                        binding.searchHistoryLayout.visibility = View.VISIBLE
+                        binding.trackRecycler.visibility = View.GONE
+                        binding.progressBar.visibility = View.GONE
+                        binding.noInternetLayout.visibility = View.GONE
+                        binding.notFoundLayout.visibility = View.GONE
+                    }
                 }
                 is SearchState.Loading -> {
                     binding.progressBar.visibility = View.VISIBLE
@@ -141,13 +138,13 @@ class SearchFragment : Fragment() {
 
         viewModel.historyTracks.observe(viewLifecycleOwner) { tracks ->
             historyAdapter.updateList(tracks.toMutableList())
-            binding.searchHistoryLayout.isVisible = tracks.isNotEmpty()
-            binding.historyClearButton.isVisible = tracks.isNotEmpty()
+            binding.searchHistoryLayout.isVisible = tracks.isNotEmpty() && binding.trackSearch.text.isNullOrEmpty()
+            binding.historyClearButton.isVisible = tracks.isNotEmpty() && binding.trackSearch.text.isNullOrEmpty()
         }
 
         viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
-            if (isLoading)binding.trackRecycler.visibility = View.GONE
             binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
+            if (isLoading) binding.trackRecycler.visibility = View.GONE
         }
 
         viewModel.showError.observe(viewLifecycleOwner) { showError ->
@@ -158,7 +155,9 @@ class SearchFragment : Fragment() {
             binding.notFoundLayout.visibility = if (showEmpty) View.VISIBLE else View.GONE
         }
 
-        viewModel.getSearchHistory()
+        if (binding.trackSearch.text.isNullOrEmpty()) {
+            viewModel.getSearchHistory()
+        }
     }
 
     private fun createTextWatcher(): TextWatcher {
