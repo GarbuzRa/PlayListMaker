@@ -3,6 +3,7 @@ package com.example.playlistmaker.presentation.viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.playlistmaker.domain.model.SearchState
 import com.example.playlistmaker.domain.model.Track
 import com.example.playlistmaker.domain.repository.TrackRepository
@@ -10,6 +11,9 @@ import com.example.playlistmaker.domain.usecase.AddToSearchHistoryUseCase
 import com.example.playlistmaker.domain.usecase.ClearSearchHistoryUseCase
 import com.example.playlistmaker.domain.usecase.GetSearchHistoryUseCase
 import com.example.playlistmaker.domain.usecase.SearchTracksUseCase
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class SearchViewModel(private val searchTracksUseCase: SearchTracksUseCase,
                       private val getSearchHistoryUseCase: GetSearchHistoryUseCase,
@@ -34,32 +38,44 @@ class SearchViewModel(private val searchTracksUseCase: SearchTracksUseCase,
     private val _historyTracks = MutableLiveData<List<Track>>()
     val historyTracks: LiveData<List<Track>> = _historyTracks
 
+    private var searchJob: Job? = null
+
     fun searchTracks(query: String) {
-        _searchState.value = SearchState.Loading
-        searchTracksUseCase.execute(query) { result ->
-            result.fold(
-                onSuccess = { tracks ->
-                    if (tracks.isNotEmpty()) {
-                        _searchState.value = SearchState.ShowSearchResults(tracks)
-                    } else {
-                        _searchState.value = SearchState.Empty
+        searchJob?.cancel()
+        searchJob = viewModelScope.launch {
+            delay(300)
+            _searchState.value = SearchState.Loading
+            searchTracksUseCase.execute(query).collect{ result ->
+                result.fold(
+                    onSuccess = { tracks ->
+                        if (tracks.isNotEmpty()) {
+                            _searchState.value = SearchState.ShowSearchResults(tracks)
+                        } else {
+                            _searchState.value = SearchState.Empty
+                        }
+
+                    },
+                    onFailure = {
+                        _searchState.value = SearchState.Error
                     }
-                },
-                onFailure = {
-                    _searchState.value = SearchState.Error
-                }
-            )
+                )
+            }
         }
     }
 
     fun getSearchHistory() {
         _historyTracks.value = getSearchHistoryUseCase.execute()
-        _searchState.value = SearchState.ShowHistory
+        if(_historyTracks.value.isNullOrEmpty()){
+            _searchState.value = SearchState.NoHistory
+        }
+        else{
+            _searchState.value = SearchState.ShowHistory
+        }
+
     }
 
     fun addToSearchHistory(track: Track) {
         addToSearchHistoryUseCase.execute(track)
-        getSearchHistory()
     }
 
     fun clearSearchHistory() {

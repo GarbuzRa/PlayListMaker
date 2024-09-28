@@ -2,21 +2,18 @@
 
 package com.example.playlistmaker.presentation.ui.search
 
-import android.content.Context.INPUT_METHOD_SERVICE
 import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.playlistmaker.databinding.FragmentSearchBinding
+import com.example.playlistmaker.databinding.ActivitySearchBinding
 import com.example.playlistmaker.domain.model.SearchState
 import com.example.playlistmaker.domain.model.Track
 import com.example.playlistmaker.presentation.ui.player.PlayerActivity
@@ -24,23 +21,17 @@ import com.example.playlistmaker.presentation.viewmodel.SearchViewModel
 import com.google.gson.Gson
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class SearchFragment : Fragment() {
-    private lateinit var binding: FragmentSearchBinding
+class SearchActivity : AppCompatActivity() {
+    private lateinit var binding: ActivitySearchBinding
     private val viewModel: SearchViewModel by viewModel()
     private lateinit var adapter: TrackAdapter
     private lateinit var historyAdapter: TrackAdapter
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        binding = FragmentSearchBinding.inflate(inflater, container, false)
-        return binding.root
-    }
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        binding = ActivitySearchBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
         setupViews()
         setupListeners()
         setupAdapters()
@@ -49,10 +40,11 @@ class SearchFragment : Fragment() {
 
     private fun setupViews() {
         binding.searchHistoryRecycleView.visibility = View.VISIBLE
-        binding.trackRecycler.layoutManager = LinearLayoutManager(requireContext())
+        binding.trackRecycler.layoutManager = LinearLayoutManager(this)
     }
 
     private fun setupListeners() {
+        binding.searchBackButton.setOnClickListener { finish() }
         binding.updateButton.setOnClickListener { viewModel.searchTracks(binding.trackSearch.text.toString()) }
         binding.clearText.setOnClickListener { clearSearch() }
         binding.trackSearch.addTextChangedListener(createTextWatcher())
@@ -60,15 +52,15 @@ class SearchFragment : Fragment() {
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 viewModel.searchTracks(binding.trackSearch.text.toString())
                 true
-            } else {
-                false
             }
+            false
         }
         binding.historyClearButton.setOnClickListener { viewModel.clearSearchHistory() }
     }
 
     private fun setupAdapters() {
         historyAdapter = TrackAdapter(mutableListOf()) { track ->
+            viewModel.addToSearchHistory(track)
             gotoPlayer(track)
         }
         binding.searchHistoryRecycleView.adapter = historyAdapter
@@ -81,21 +73,19 @@ class SearchFragment : Fragment() {
     }
 
     private fun observeViewModel() {
-        viewModel.tracks.observe(viewLifecycleOwner) { tracks ->
+        viewModel.tracks.observe(this) { tracks ->
             adapter.updateList(tracks.toMutableList())
             binding.trackRecycler.visibility = View.VISIBLE
         }
 
-        viewModel.searchState.observe(viewLifecycleOwner) { state ->
+        viewModel.searchState.observe(this) { state ->
             when (state) {
                 is SearchState.ShowHistory -> {
-                    if (binding.trackSearch.text.isNullOrEmpty()) {
-                        binding.searchHistoryLayout.visibility = View.VISIBLE
-                        binding.trackRecycler.visibility = View.GONE
-                        binding.progressBar.visibility = View.GONE
-                        binding.noInternetLayout.visibility = View.GONE
-                        binding.notFoundLayout.visibility = View.GONE
-                    }
+                    binding.searchHistoryLayout.visibility = View.VISIBLE
+                    binding.trackRecycler.visibility = View.GONE
+                    binding.progressBar.visibility = View.GONE
+                    binding.noInternetLayout.visibility = View.GONE
+                    binding.notFoundLayout.visibility = View.GONE
                 }
                 is SearchState.Loading -> {
                     binding.progressBar.visibility = View.VISIBLE
@@ -136,28 +126,26 @@ class SearchFragment : Fragment() {
             }
         }
 
-        viewModel.historyTracks.observe(viewLifecycleOwner) { tracks ->
+        viewModel.historyTracks.observe(this) { tracks ->
             historyAdapter.updateList(tracks.toMutableList())
-            binding.searchHistoryLayout.isVisible = tracks.isNotEmpty() && binding.trackSearch.text.isNullOrEmpty()
-            binding.historyClearButton.isVisible = tracks.isNotEmpty() && binding.trackSearch.text.isNullOrEmpty()
+            binding.searchHistoryLayout.isVisible = tracks.isNotEmpty()
+            binding.historyClearButton.isVisible = tracks.isNotEmpty()
         }
 
-        viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
+        viewModel.isLoading.observe(this) { isLoading ->
+            if (isLoading)binding.trackRecycler.visibility = View.GONE
             binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
-            if (isLoading) binding.trackRecycler.visibility = View.GONE
         }
 
-        viewModel.showError.observe(viewLifecycleOwner) { showError ->
+        viewModel.showError.observe(this) { showError ->
             binding.noInternetLayout.visibility = if (showError) View.VISIBLE else View.GONE
         }
 
-        viewModel.showEmpty.observe(viewLifecycleOwner) { showEmpty ->
+        viewModel.showEmpty.observe(this) { showEmpty ->
             binding.notFoundLayout.visibility = if (showEmpty) View.VISIBLE else View.GONE
         }
 
-        if (binding.trackSearch.text.isNullOrEmpty()) {
-            viewModel.getSearchHistory()
-        }
+        viewModel.getSearchHistory()
     }
 
     private fun createTextWatcher(): TextWatcher {
@@ -185,12 +173,12 @@ class SearchFragment : Fragment() {
     }
 
     private fun keyboardHide() {
-        val inputMethod = requireActivity().getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
-        view?.let { inputMethod.hideSoftInputFromWindow(it.windowToken, 0) }
+        val inputMethod = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+        currentFocus?.let { inputMethod.hideSoftInputFromWindow(it.windowToken, 0) }
     }
 
     private fun gotoPlayer(track: Track) {
-        val intent = Intent(requireContext(), PlayerActivity::class.java)
+        val intent = Intent(this, PlayerActivity::class.java)
         intent.putExtra(PlayerActivity.CURRENT_TRACK, Gson().toJson(track))
         startActivity(intent)
     }

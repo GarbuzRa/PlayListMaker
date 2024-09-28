@@ -6,4 +6,5 @@ sealed class SearchState {
     data class ShowSearchResults(val tracks: List<Track>) : SearchState()
     object Error : SearchState()
     object Empty : SearchState()
+    object NoHistory : SearchState()
 }

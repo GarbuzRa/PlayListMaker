@@ -3,4 +3,5 @@
     <attr name="playPauseColor" format="color"/>
     <attr name="searchIconColor" format="color"/>
     <attr name="clearIconColor" format="color"/>
+    <attr name="playerSideIconColor" format="color"/>
 </resources>
