@@ -23,7 +23,7 @@ class FavoritesRepositoryImpl(val appDataBase: AppDatabase) : FavoritesRepositor
     override fun getFavorites() : Flow<List<Track>> {
         return appDataBase.favoritesDao().getFavoriteTracks().map { list ->
             list.map { it.toTrack() }
-        }
+        }.map { it.reversed() }
     }
     override fun getFavoritesIds() : Flow<List<String>> {
         return appDataBase.favoritesDao().getFavoriteTracksIds()

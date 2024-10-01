@@ -15,7 +15,7 @@ interface FavoritesDao {
     @Delete
     fun deleteTracK(track: FavoritesEntity)
 
-    @Query("SELECT * FROM favorites ORDER BY trackName DESC")
+    @Query("SELECT * FROM favorites")
     fun getFavoriteTracks() : Flow<List<FavoritesEntity>>
 
     @Query("SELECT trackId FROM favorites")
