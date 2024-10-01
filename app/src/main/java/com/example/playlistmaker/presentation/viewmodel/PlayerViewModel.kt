@@ -1,12 +1,11 @@
 package com.example.playlistmaker.presentation.viewmodel
 
-import android.os.Handler
-import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.playlistmaker.domain.repository.PlayerRepository
+import com.example.playlistmaker.domain.model.Track
+import com.example.playlistmaker.domain.usecase.FavoritesInteractor
 import com.example.playlistmaker.domain.usecase.GetCurrentPositionUseCase
 import com.example.playlistmaker.domain.usecase.ReleasePlayerUseCase
 import com.example.playlistmaker.domain.usecase.GetTrackUseCase
@@ -16,6 +15,7 @@ import com.example.playlistmaker.domain.usecase.PrepareTrackUseCase
 import com.example.playlistmaker.domain.usecase.SetOnCompletionListenerUseCase
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
@@ -29,7 +29,8 @@ class PlayerViewModel(
     private val prepareTrackUseCase: PrepareTrackUseCase,
     private val releasePlayerUseCase: ReleasePlayerUseCase,
     private val getCurrentPositionUseCase: GetCurrentPositionUseCase,
-    private val setOnCompletionListenerUseCase: SetOnCompletionListenerUseCase
+    private val setOnCompletionListenerUseCase: SetOnCompletionListenerUseCase,
+    private val favoritesInteractor: FavoritesInteractor
 ) : ViewModel() {
 
     private val _trackData = MutableLiveData<TrackUiState>()
@@ -41,10 +42,18 @@ class PlayerViewModel(
     private val _currentPosition = MutableLiveData<String>()
     val currentPosition: LiveData<String> = _currentPosition
 
+    private val _currentTrack = MutableLiveData<Track>()
+    var currentTrack : LiveData<Track> = _currentTrack
+
+    private val _isFavorite = MutableLiveData<Boolean>()
+    val isFavorite : LiveData<Boolean> = _isFavorite
+
     private var updateJob: Job? = null
 
+
     fun preparePlayer(trackId: String) {
-        val track = getTrackUseCase(trackId)
+        _currentTrack.value = getTrackUseCase(trackId)!!
+        val track = _currentTrack.value
         if(track != null){
             prepareTrackUseCase(track)
             setOnCompletionListenerUseCase {
@@ -65,6 +74,15 @@ class PlayerViewModel(
         }
 
         _currentPosition.value = "00:00"
+        _currentTrack.value = track!!
+    }
+
+    init {
+        viewModelScope.launch {
+            val favoritesIds = favoritesInteractor.getFavoritesIds().first()
+            _isFavorite.value = favoritesIds.contains(_currentTrack.value!!.trackId)
+            _currentTrack.value!!.isFavorite = _isFavorite.value!!
+        }
     }
 
     fun playbackControl() {
@@ -117,4 +135,17 @@ class PlayerViewModel(
         val primaryGenreName: String,
         val country: String
     )
+
+    fun onFavoriteClicked(){
+        val track = _currentTrack.value ?: return
+        viewModelScope.launch {
+            if (track.isFavorite){
+                favoritesInteractor.deleteFavorite(track)
+            }else{
+                favoritesInteractor.insertFavorite(track)
+            }
+            track.isFavorite = !track.isFavorite
+            _isFavorite.postValue(track.isFavorite)
+        }
+    }
 }

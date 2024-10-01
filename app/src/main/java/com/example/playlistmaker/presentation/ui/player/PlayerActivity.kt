@@ -42,6 +42,8 @@ class PlayerActivity : AppCompatActivity() {
         binding.addImageView.setOnClickListener {
             showMessage(getString(R.string.added_to_library, viewModel.trackData.value?.trackName))
         }
+        binding.likeButton.setOnClickListener{viewModel.onFavoriteClicked()}
+
     }
 
     private fun observeViewModel() {
@@ -67,6 +69,12 @@ class PlayerActivity : AppCompatActivity() {
 
         viewModel.currentPosition.observe(this) { position ->
             binding.trackTimeTextView.text = position
+        }
+        viewModel.isFavorite.observe(this){isFavorite ->
+            binding.likeButton.setImageResource(
+                if (isFavorite) R.drawable.like_active
+                else R.drawable.like
+            )
         }
     }
 

@@ -4,26 +4,46 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".presentation.ui.mediateka.FavoriteTracksFragment">
+    tools:context=".presentation.ui.mediateka.FavoritesFragment">
 
-   <ImageView
-       android:id="@+id/not_found_img"
-       android:layout_width="wrap_content"
-       android:layout_height="wrap_content"
-       style="@style/NotFoundImageStyle"
-       app:layout_constraintTop_toTopOf="parent"
-       app:layout_constraintStart_toStartOf="parent"
-       app:layout_constraintEnd_toEndOf="parent"
-       android:layout_marginTop="106dp"/>
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_favorites"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        tools:listitem="@layout/track_item"
+        android:visibility="gone"/>
 
-    <TextView
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/empty_layout"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/mediateka_empty"
-        style="@style/TextErrorStyle"
-        app:layout_constraintTop_toBottomOf="@id/not_found_img"
+        android:orientation="vertical"
+        android:gravity="center"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_margin="16dp"/>
+        app:layout_constraintEnd_toEndOf="parent">
+        <ImageView
+            android:id="@+id/not_found_img"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/NotFoundImageStyle"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="106dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/mediateka_empty"
+            style="@style/TextErrorStyle"
+            app:layout_constraintTop_toBottomOf="@id/not_found_img"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_margin="16dp"/>
+    </LinearLayout>
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

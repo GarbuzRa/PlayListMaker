@@ -1,6 +1,7 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id ("kotlin-kapt")
 }
 
 android {
@@ -15,6 +16,11 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+    }
+
+    kapt {
+        arguments { arg("room.schemaLocation", "$projectDir/schemas") }
     }
 
     buildTypes {
@@ -39,6 +45,7 @@ android {
 }
 
 dependencies {
+    val roomVersion = "2.5.1"
     implementation ("com.github.bumptech.glide:glide:4.12.0")
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
@@ -55,4 +62,8 @@ dependencies {
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
     annotationProcessor ("com.github.bumptech.glide:compiler:4.12.0")
+
+    implementation("androidx.room:room-runtime:$roomVersion")
+    kapt("androidx.room:room-compiler:$roomVersion")
+    implementation("androidx.room:room-ktx:$roomVersion")
 }
