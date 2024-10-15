@@ -10,5 +10,6 @@ data class Track(
     val releaseDate: String,
     val primaryGenreName: String,
     val country: String,
-    val previewUrl: String //ссылка на превью трека (первые 30сек)
+    val previewUrl: String, //ссылка на превью трека (первые 30сек)
+    var isFavorite : Boolean = false
 )
