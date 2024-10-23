@@ -3,7 +3,8 @@ package com.example.playlistmaker.di
 import android.content.Context
 import android.media.MediaPlayer
 import androidx.room.Room
-import com.example.playlistmaker.data.db.AppDatabase
+import com.example.playlistmaker.data.db.favorites.AppDatabase
+import com.example.playlistmaker.data.db.playlist.PlayListsDatabase
 import com.example.playlistmaker.data.remote.ItunesApiService
 import com.example.playlistmaker.data.repository.FavoritesRepositoryImpl
 import com.example.playlistmaker.data.repository.PlayerRepositoryImpl
@@ -16,7 +17,7 @@ import com.example.playlistmaker.domain.repository.SettingsRepository
 import com.example.playlistmaker.domain.repository.TrackRepository
 import com.example.playlistmaker.domain.usecase.AddToSearchHistoryUseCase
 import com.example.playlistmaker.domain.usecase.ClearSearchHistoryUseCase
-import com.example.playlistmaker.domain.usecase.FavoritesInteractor
+import com.example.playlistmaker.domain.interactor.FavoritesInteractor
 import com.example.playlistmaker.domain.usecase.GetCurrentPositionUseCase
 import com.example.playlistmaker.domain.usecase.GetSearchHistoryUseCase
 import com.example.playlistmaker.domain.usecase.GetThemeSettingsUseCase
@@ -59,6 +60,10 @@ val dataModule = module{
     single { MediaPlayer() }
     single{
         Room.databaseBuilder(androidContext(), AppDatabase::class.java, "play-list-maker-db").build()
+    }
+
+    single {
+        Room.databaseBuilder(androidContext(), PlayListsDatabase::class.java, "play-lists-db").build()
     }
 
 }

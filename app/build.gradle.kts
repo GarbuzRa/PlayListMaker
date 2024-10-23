@@ -45,6 +45,7 @@ android {
 }
 
 dependencies {
+    implementation("androidx.room:room-common:2.6.1")
     val roomVersion = "2.5.1"
     implementation ("com.github.bumptech.glide:glide:4.12.0")
     implementation("androidx.core:core-ktx:1.12.0")

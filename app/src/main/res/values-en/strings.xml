@@ -26,4 +26,9 @@
     <string name="new_play_list">New playlist</string>
     <string name="favorite_tracks">Favorite Tracks</string>
     <string name="playlists">Playlist</string>
+    <string name="no_playlists">No playlists</string>
+    <string name="add_to_play_list">Add to playlist</string>
+    <string name="new_playlist">New playlist</string>
+    <string name="name">Name</string>
+    <string name="description">Description</string>
 </resources>

@@ -1,7 +1,7 @@
 package com.example.playlistmaker.data.repository
 
-import com.example.playlistmaker.data.db.AppDatabase
-import com.example.playlistmaker.data.db.FavoritesEntity
+import com.example.playlistmaker.data.db.favorites.AppDatabase
+import com.example.playlistmaker.data.db.favorites.FavoritesEntity
 import com.example.playlistmaker.domain.model.Track
 import com.example.playlistmaker.domain.repository.FavoritesRepository
 import kotlinx.coroutines.GlobalScope

@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.playlistmaker.domain.model.Track
-import com.example.playlistmaker.domain.usecase.FavoritesInteractor
+import com.example.playlistmaker.domain.interactor.FavoritesInteractor
 import kotlinx.coroutines.launch
 
 class FavoritesViewModel(private val interactor: FavoritesInteractor): ViewModel() {
