@@ -8,7 +8,7 @@ import com.example.playlistmaker.domain.model.PlayList
 import com.example.playlistmaker.presentation.ui.mediateka.adapter.PlaylistsViewHolder.ClickListener
 
 class PlaylistsAdapter(val clickListener: ClickListener): RecyclerView.Adapter<PlaylistsViewHolder>() {
-    val playlists = ArrayList<PlayList>()
+    var playlists = ArrayList<PlayList>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PlaylistsViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.playlist_item, parent, false)

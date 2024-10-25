@@ -24,7 +24,7 @@ class PlaylistsViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
         }
 
         Glide.with(itemView)
-            .load(playList.imageTitle)
+            .load(playList.imageUri)
             .placeholder(R.drawable.placeholder)
             .into(binding.coverPlaylist)
     }

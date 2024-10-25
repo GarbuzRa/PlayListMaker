@@ -10,7 +10,7 @@ import androidx.room.Update
 @Dao
 interface PlayListDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend  fun insertPlayList(playListEntity: PlayListEntity)
+    suspend fun insertPlayList(playListEntity: PlayListEntity)
 
     @Delete
     suspend fun deletePlayList(playListEntity: PlayListEntity)

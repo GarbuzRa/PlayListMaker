@@ -1,6 +1,7 @@
 package com.example.playlistmaker.presentation.viewmodel
 
 import android.app.ActivityManager.TaskDescription
+import android.content.Context
 import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -29,7 +30,13 @@ class NewPlaylistViewModel(val interactor: PlaylistInteractor): ViewModel() {
         viewModelScope.launch {
             interactor.insertPlayList(playList)
         }
-
     }
 
+    fun saveImageToStorage(context: Context, uri: Uri){
+        viewModelScope.launch {
+            val savedUri = interactor.saveImageToStorage(context,uri)
+            _savedCoverUri.postValue(savedUri)
+        }
+
+    }
 }

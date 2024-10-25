@@ -10,7 +10,6 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import com.example.playlistmaker.R
-import com.example.playlistmaker.databinding.ActivityMediatekaBinding
 import com.example.playlistmaker.databinding.FragmentMediatekaBinding
 import com.google.android.material.tabs.TabLayoutMediator
 

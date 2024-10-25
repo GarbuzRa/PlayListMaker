@@ -221,6 +221,30 @@
         <item name="iconSize">24dp</item>
         <item name="iconTint">@color/black</item>
     </style>
+    <style name="BaseDialogStyle" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+        <item name="colorSurface">@color/white</item>
+        <item name="materialAlertDialogTitleTextStyle">@style/DialogTitleTextStyle</item>
+        <item name="materialAlertDialogBodyTextStyle">@style/DialogBodyTextStyle</item>
+        <item name="buttonBarPositiveButtonStyle">@style/YesButton</item>
+        <item name="buttonBarNegativeButtonStyle">@style/NoButton</item>
+    </style>
+    <style name="DialogTitleTextStyle" parent="MaterialAlertDialog.MaterialComponents.Title.Text">
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+    <style name="DialogBodyTextStyle" parent="MaterialAlertDialog.MaterialComponents.Title.Text">
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textSize">13sp</item>
+    </style>
+    <style name="YesButton" parent="Widget.AppCompat.Button.ButtonBar.AlertDialog">
+        <item name="android:textColor">@color/yp_blue</item>
+        <item name="android:backgroundTint">@color/white</item>
+    </style>
+    <style name="NoButton" parent="Widget.AppCompat.Button.ButtonBar.AlertDialog">
+        <item name="android:textColor">@color/yp_blue</item>
+        <item name="android:backgroundTint">@color/white</item>
+    </style>
 
 
 </resources>
