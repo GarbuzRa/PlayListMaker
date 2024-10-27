@@ -37,4 +37,6 @@
     <string name="all_unsaved_data_will_be_lost">All unsaved data will be lost</string>
     <string name="cancel">Cancel</string>
     <string name="exit">Exit</string>
+    <string name="added_to_playlist">Added to playlist</string>
+    <string name="track_is_already_in_playlist">Track is already in playlist</string>
 </resources>

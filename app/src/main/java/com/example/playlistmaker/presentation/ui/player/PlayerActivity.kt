@@ -1,15 +1,11 @@
-// presentation/ui/player/PlayerActivity.kt
 package com.example.playlistmaker.presentation.ui.player
 
 import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
@@ -17,19 +13,18 @@ import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.ActivityPlayerBinding
 import com.example.playlistmaker.domain.model.PlayList
 import com.example.playlistmaker.domain.model.Track
-import com.example.playlistmaker.presentation.ui.mediateka.adapter.PlaylistsAdapter
-import com.example.playlistmaker.presentation.ui.mediateka.adapter.PlaylistsViewHolder
 import com.example.playlistmaker.presentation.ui.playlist.NewPlaylistFragment
 import com.example.playlistmaker.presentation.viewmodel.PlayerViewModel
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.gson.Gson
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import kotlin.jvm.internal.Ref.BooleanRef
 
-class PlayerActivity : AppCompatActivity() {
+class PlayerActivity : AppCompatActivity(), PlaylistInPlayerViewHolder.ClickListener {
     private lateinit var binding: ActivityPlayerBinding
     private val viewModel: PlayerViewModel by viewModel()
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<LinearLayout>
+    private lateinit var adapter: PlaylistInPlayerAdapter
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,12 +48,40 @@ class PlayerActivity : AppCompatActivity() {
         }
     }
 
+
     private fun setupBottomSheet() {
         bottomSheetBehavior = BottomSheetBehavior.from(binding.bottomSheetAudioPlayer)
         bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
 
+        bottomSheetBehavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+            override fun onStateChanged(bottomSheet: View, newState: Int) {
+                when (newState) {
+                    BottomSheetBehavior.STATE_HIDDEN -> {
+                        binding.bottomSheetOverlay.visibility = View.GONE
+                    }
+                    BottomSheetBehavior.STATE_EXPANDED -> {
+                        binding.bottomSheetOverlay.visibility = View.VISIBLE
+                    }
+                }
+            }
+
+            override fun onSlide(bottomSheet: View, slideOffset: Float) {
+                binding.bottomSheetOverlay.alpha = slideOffset
+            }
+        })
+
         binding.bottomSheetAddPlaylistBtn.setOnClickListener {
             showNewPlaylistFragment()
+        }
+
+        binding.bottomSheetOverlay.setOnClickListener {
+            setBottomSheetVis(false)
+        }
+
+        binding.bottomSheetOverlay.setOnFocusChangeListener { v, hasFocus ->
+            if(!hasFocus){
+                setBottomSheetVis(false)
+            }
         }
     }
 
@@ -72,12 +95,7 @@ class PlayerActivity : AppCompatActivity() {
     }
 
     private fun setupPlaylistsRecyclerView() {
-        val adapter = PlaylistsAdapter(object : PlaylistsViewHolder.ClickListener {
-            override fun onClick(playlist: PlayList) {
-                viewModel.addTrackToPlaylist(playlist)
-                setBottomSheetVis(false)
-            }
-        })
+        adapter = PlaylistInPlayerAdapter(this)
         binding.bottomSheetRecyclerView.adapter = adapter
         binding.bottomSheetRecyclerView.layoutManager = LinearLayoutManager(this)
 
@@ -130,13 +148,11 @@ class PlayerActivity : AppCompatActivity() {
         }
     }
 
-    private fun setBottomSheetVis(visible: Boolean){
-        if (visible){
-            bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
-            binding.bottomSheetOverlay.visibility = View.VISIBLE
-        } else{
-            bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
-            binding.bottomSheetOverlay.visibility = View.GONE
+    private fun setBottomSheetVis(visible: Boolean) {
+        bottomSheetBehavior.state = if (visible) {
+            BottomSheetBehavior.STATE_EXPANDED
+        } else {
+            BottomSheetBehavior.STATE_HIDDEN
         }
     }
 
@@ -156,5 +172,33 @@ class PlayerActivity : AppCompatActivity() {
 
     companion object {
         const val CURRENT_TRACK = "current_track"
+    }
+
+    override fun onClick(playlist: PlayList) {
+        if (!viewModel.isInPlaylist(
+                playlist = playlist,
+                trackId = viewModel.currentTrack.value?.trackId?.toLong() ?: 0
+            )
+        ) {
+            viewModel.onAddToPlaylistClick(playlist = playlist, track = viewModel.currentTrack.value!!)
+            Toast.makeText(
+                this.applicationContext,
+                "${getString(R.string.added_to_playlist)} ${playlist.name}",
+                Toast.LENGTH_SHORT
+            )
+                .show()
+            playlist.trackCount = playlist.tracksId.size
+            BottomSheetBehavior.from(binding.bottomSheetAudioPlayer).apply {
+                state = BottomSheetBehavior.STATE_HIDDEN
+            }
+        } else {
+            Toast.makeText(
+                this.applicationContext,
+                "${getString(R.string.track_is_already_in_playlist)} ${playlist.name}",
+                Toast.LENGTH_SHORT
+            )
+                .show()
+        }
+        adapter.notifyDataSetChanged()
     }
 }

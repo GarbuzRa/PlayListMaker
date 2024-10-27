@@ -59,6 +59,20 @@ class PlayerViewModel(
 
     private var updateJob: Job? = null
 
+    fun isInPlaylist(playlist: PlayList, trackId: Long): Boolean {
+        var data = false
+        for (track in playlist.tracksId) {
+            if (track == trackId) data = true
+        }
+        return data
+    }
+
+    fun onAddToPlaylistClick(playlist: PlayList, track: Track) {
+        viewModelScope.launch {
+            playlist.trackCount = playlist.tracksId.size + 1
+            playlistInteractor.insertTrackToPlaylist(playlist, track)
+        }
+    }
 
     fun preparePlayer(trackId: String) {
         _currentTrack.value = getTrackUseCase(trackId)!!
