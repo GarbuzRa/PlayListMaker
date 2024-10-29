@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals
+        name="count_tracks"
+        translatable = "false">
+        <item quantity="one"> трек</item>
+        <item quantity="few"> трека</item>
+        <item quantity="many"> треков</item>
+        <item quantity="other">треков</item>
+    </plurals>
+
+</resources>

@@ -43,7 +43,7 @@ class SearchViewModel(private val searchTracksUseCase: SearchTracksUseCase,
     fun searchTracks(query: String) {
         searchJob?.cancel()
         searchJob = viewModelScope.launch {
-            delay(300)
+            delay(2000)
             _searchState.value = SearchState.Loading
             searchTracksUseCase.execute(query).collect{ result ->
                 result.fold(

@@ -2,6 +2,7 @@ package com.example.playlistmaker.presentation.ui.main
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
@@ -24,6 +25,18 @@ class MainActivity : AppCompatActivity() {
 
         val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottom_nav_view)
         NavigationUI.setupWithNavController(bottomNavigationView, navController)
+    }
+
+    fun setNavBarVis(visible: Boolean){
+        if(visible){
+            val navBar = binding.bottomNavView
+            navBar.visibility = View.VISIBLE
+        }
+        else{
+            val navBar = binding.bottomNavView
+            navBar.visibility = View.GONE
+        }
+
     }
 
 }

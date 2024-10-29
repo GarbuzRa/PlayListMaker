@@ -3,9 +3,11 @@ package com.example.playlistmaker.di
 import android.content.Context
 import android.media.MediaPlayer
 import androidx.room.Room
-import com.example.playlistmaker.data.db.AppDatabase
+import com.example.playlistmaker.data.db.favorites.AppDatabase
+import com.example.playlistmaker.data.db.playlist.PlayListsDatabase
 import com.example.playlistmaker.data.remote.ItunesApiService
 import com.example.playlistmaker.data.repository.FavoritesRepositoryImpl
+import com.example.playlistmaker.data.repository.PlayListRepositoryImpl
 import com.example.playlistmaker.data.repository.PlayerRepositoryImpl
 import com.example.playlistmaker.data.repository.SettingsRepositoryImpl
 import com.example.playlistmaker.data.repository.TrackRepositoryImpl
@@ -16,7 +18,9 @@ import com.example.playlistmaker.domain.repository.SettingsRepository
 import com.example.playlistmaker.domain.repository.TrackRepository
 import com.example.playlistmaker.domain.usecase.AddToSearchHistoryUseCase
 import com.example.playlistmaker.domain.usecase.ClearSearchHistoryUseCase
-import com.example.playlistmaker.domain.usecase.FavoritesInteractor
+import com.example.playlistmaker.domain.interactor.FavoritesInteractor
+import com.example.playlistmaker.domain.interactor.PlaylistInteractor
+import com.example.playlistmaker.domain.repository.PlayListRepository
 import com.example.playlistmaker.domain.usecase.GetCurrentPositionUseCase
 import com.example.playlistmaker.domain.usecase.GetSearchHistoryUseCase
 import com.example.playlistmaker.domain.usecase.GetThemeSettingsUseCase
@@ -30,6 +34,7 @@ import com.example.playlistmaker.domain.usecase.SetOnCompletionListenerUseCase
 import com.example.playlistmaker.domain.usecase.SetThemeSettingsUseCase
 import com.example.playlistmaker.presentation.viewmodel.FavoritesViewModel
 import com.example.playlistmaker.presentation.viewmodel.MediatekaViewModel
+import com.example.playlistmaker.presentation.viewmodel.NewPlaylistViewModel
 import com.example.playlistmaker.presentation.viewmodel.PlayListViewModel
 import com.example.playlistmaker.presentation.viewmodel.PlayerViewModel
 import com.example.playlistmaker.presentation.viewmodel.SearchViewModel
@@ -46,6 +51,7 @@ val dataModule = module{
     single<SettingsRepository> { SettingsRepositoryImpl(get()) }
     single<TrackRepository> { TrackRepositoryImpl(get(),get()) }
     single<FavoritesRepository> { FavoritesRepositoryImpl(get()) }
+    single<PlayListRepository> { PlayListRepositoryImpl(get()) }
 
     single<ItunesApiService> {
         Retrofit.Builder()
@@ -58,7 +64,11 @@ val dataModule = module{
     single { SharedPreferencesStorage(get()) }
     single { MediaPlayer() }
     single{
-        Room.databaseBuilder(androidContext(), AppDatabase::class.java, "play-list-maker-db").build()
+        Room.databaseBuilder(androidContext(), AppDatabase::class.java, "play-list-maker-db").fallbackToDestructiveMigration().build()
+    }
+
+    single {
+        Room.databaseBuilder(androidContext(), PlayListsDatabase::class.java, "play-lists-db").fallbackToDestructiveMigration().build()
     }
 
 }
@@ -78,14 +88,16 @@ val domainModule = module{
     factory { SetOnCompletionListenerUseCase(get()) }
     factory { SetThemeSettingsUseCase(get()) }
     factory { FavoritesInteractor(get()) }
+    factory { PlaylistInteractor(get()) }
 
 }
 
 val viewModelModule = module{
     viewModel {MediatekaViewModel()}
     viewModel {FavoritesViewModel(get())}
-    viewModel {PlayListViewModel()}
-    viewModel { PlayerViewModel(get(),get(),get(),get(),get(),get(),get(), get())}
+    viewModel {PlayListViewModel(get())}
+    viewModel { PlayerViewModel(get(),get(),get(),get(),get(),get(),get(), get(), get())}
     viewModel { SearchViewModel(get(),get(),get(),get())}
     viewModel { SettingsViewModel(get(),get())}
+    viewModel { NewPlaylistViewModel(get()) }
 }

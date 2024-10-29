@@ -5,7 +5,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.playlistmaker.domain.model.Track
-import com.example.playlistmaker.domain.usecase.FavoritesInteractor
+import com.example.playlistmaker.domain.interactor.FavoritesInteractor
+import com.example.playlistmaker.domain.interactor.PlaylistInteractor
+import com.example.playlistmaker.domain.model.PlayList
 import com.example.playlistmaker.domain.usecase.GetCurrentPositionUseCase
 import com.example.playlistmaker.domain.usecase.ReleasePlayerUseCase
 import com.example.playlistmaker.domain.usecase.GetTrackUseCase
@@ -30,7 +32,8 @@ class PlayerViewModel(
     private val releasePlayerUseCase: ReleasePlayerUseCase,
     private val getCurrentPositionUseCase: GetCurrentPositionUseCase,
     private val setOnCompletionListenerUseCase: SetOnCompletionListenerUseCase,
-    private val favoritesInteractor: FavoritesInteractor
+    private val favoritesInteractor: FavoritesInteractor,
+    private val playlistInteractor: PlaylistInteractor
 ) : ViewModel() {
 
     private val _trackData = MutableLiveData<TrackUiState>()
@@ -48,8 +51,28 @@ class PlayerViewModel(
     private val _isFavorite = MutableLiveData<Boolean>()
     val isFavorite : LiveData<Boolean> = _isFavorite
 
+    private val _playlists = MutableLiveData<List<PlayList>>()
+    val playlists: LiveData<List<PlayList>> = _playlists
+
+    private val _message = MutableLiveData<String>()
+    val message: LiveData<String> = _message
+
     private var updateJob: Job? = null
 
+    fun isInPlaylist(playlist: PlayList, trackId: Long): Boolean {
+        var data = false
+        for (track in playlist.tracksId) {
+            if (track == trackId) data = true
+        }
+        return data
+    }
+
+    fun onAddToPlaylistClick(playlist: PlayList, track: Track) {
+        viewModelScope.launch {
+            playlist.trackCount = playlist.tracksId.size + 1
+            playlistInteractor.insertTrackToPlaylist(playlist, track)
+        }
+    }
 
     fun preparePlayer(trackId: String) {
         _currentTrack.value = getTrackUseCase(trackId)!!
@@ -83,7 +106,9 @@ class PlayerViewModel(
             _isFavorite.value = favoritesIds.contains(_currentTrack.value!!.trackId)
             _currentTrack.value!!.isFavorite = _isFavorite.value!!
         }
+        refreshPlaylists()
     }
+
 
     fun playbackControl() {
         if (_isPlaying.value == true) {
@@ -148,4 +173,29 @@ class PlayerViewModel(
             _isFavorite.postValue(track.isFavorite)
         }
     }
+
+    fun refreshPlaylists() {
+        viewModelScope.launch {
+            playlistInteractor.getAllPlaylists().collect { playlistsList ->
+                _playlists.value = playlistsList
+            }
+        }
+    }
+
+    fun addTrackToPlaylist(playlist: PlayList) {
+        viewModelScope.launch {
+            val track = _currentTrack.value ?: return@launch
+            try {
+                playlistInteractor.insertTrackToPlaylist(playlist, track)
+                _message.value = "Добавлено в плейлист ${playlist.name}"
+            } catch (e: Exception) {
+                if (e is IllegalStateException && e.message == "Track already exists in playlist") {
+                    _message.value = "Трек уже добавлен в плейлист ${playlist.name}"
+                } else {
+                    _message.value = "Ошибка при добавлении трека в плейлист"
+                }
+            }
+        }
+    }
+
 }
