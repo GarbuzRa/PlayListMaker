@@ -17,6 +17,10 @@ class PlaylistInteractor(val playListRepository: PlayListRepository) {
         playListRepository.deletePlayList(playList)
     }
 
+    suspend fun deletePlaylistById(id: Int){
+        playListRepository.deletePlaylistById(id)
+    }
+
     suspend fun insertTrackToPlaylist(playList: PlayList, track: Track) {
         playListRepository.insertTrackToPlaylist(playList, track)
     }
@@ -32,4 +36,22 @@ class PlaylistInteractor(val playListRepository: PlayListRepository) {
     suspend fun saveImageToStorage(context: Context, uri: Uri): Uri? {
         return playListRepository.saveImageToStorage(context, uri)
     }
+
+    suspend fun getAllTracks(tracksIds: List<Long>): List<Track>{
+        return playListRepository.getAllTracks(tracksIds)
+    }
+
+    suspend fun deleteTrackFromPlaylist(playlistId: Int, trackId: Long){
+        return playListRepository.deleteTrackFromPlaylist(playlistId,trackId)
+    }
+
+    suspend fun trackCountDecrement(playlistId: Int){
+        return playListRepository.trackCountDecrement(playlistId)
+    }
+
+    suspend fun modifyData(name: String, description: String,cover: String, coverUri: Uri?,originalPlayList: PlayList) {
+        playListRepository.modifyData(name, description, cover, coverUri, originalPlayList)
+    }
+
+
 }

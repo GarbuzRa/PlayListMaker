@@ -101,7 +101,14 @@ class PlayListFragment : Fragment(), PlaylistsViewHolder.ClickListener {
         }
     }
 
-    override fun onClick(playList: PlayList) {
-         // TODO("Not yet implemented")
+    override fun onClick(playlist: PlayList) {
+        val bundle = Bundle().apply {
+            putParcelable("selected_playlist", playlist)
+        }
+        findNavController().navigate(
+            R.id.action_mediatekaFragment_to_currentPlaylistFragment,
+            bundle
+        )
+
     }
 }

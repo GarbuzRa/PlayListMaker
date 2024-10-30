@@ -61,6 +61,72 @@ class PlayListRepositoryImpl(private val database: PlayListsDatabase): PlayListR
         return outputUri
     }
 
+    override suspend fun getAllTracks(tracksIds: List<Long>): List<Track> {
+        val playlist = database.playlistDao().getAllPlaylistTracks()
+        return playlist
+            .filter { it.trackId.toLong() in tracksIds }
+            .sortedByDescending { it.timeInsert }
+            .map { it.fromDomainModel() }
+    }
+
+    override suspend fun deleteTrackFromPlaylist(playlistId: Int, trackId: Long) {
+        val playlist = getPlaylistById(playlistId)
+        playlist.tracksId.remove(trackId)
+        updatePlaylist(playlist)
+        if (!checkTrackGlobally(trackId)) {
+            deleteTrackIfNoMatch(trackId)
+        }
+    }
+
+    private suspend fun deleteTrackIfNoMatch(trackId: Long) {
+        database.playlistDao().deleteTrackById(trackId)
+    }
+
+    private suspend fun checkTrackGlobally(trackId: Long): Boolean {
+        val anyPlaylists = database.playlistDao().getAllPlaylists()
+        for (playlist in anyPlaylists) {
+            if (trackId in playlist.tracksId) {
+                return true
+            }
+        }
+        return false
+    }
+
+    override suspend fun updatePlaylist(playlist: PlayList) {
+        database.playlistDao().updatePlayList(playlist.fromDomainModel())
+    }
+
+    override suspend fun deletePlaylistById(id: Int) {
+        val playlist = getPlaylistById(id)
+        database.playlistDao().deletePlayList(playlist.fromDomainModel())
+    }
+
+    override suspend fun trackCountDecrement(playlistId: Int) {
+        database.playlistDao().decrementPlaylistTrackCount(playlistId)
+    }
+
+    override suspend fun modifyData(
+        name: String,
+        description: String,
+        cover: String,
+        coverUri: Uri?,
+        originalPlayList: PlayList
+    ) {
+        updatePlaylist(
+
+            PlayList(
+                id = originalPlayList.id,
+                name = originalPlayList.name,
+                description = originalPlayList.description,
+                imageTitle = cover,
+                tracksId = originalPlayList.tracksId,
+                trackCount = originalPlayList.trackCount,
+                imageUri = coverUri?.toString() ?: originalPlayList.imageUri
+
+            )
+        )
+    }
+
 }
 
     fun PlayList.fromDomainModel(): PlayListEntity {

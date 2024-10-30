@@ -21,9 +21,9 @@ import com.example.playlistmaker.presentation.viewmodel.NewPlaylistViewModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class NewPlaylistFragment : Fragment() {
+open class NewPlaylistFragment : Fragment() {
     private var _binding: FragmentNewPlaylistBinding? = null
-    private val binding get() = _binding!!
+    val binding get() = _binding!!
     private var coverUriSelect: Uri? = null
     private var showedDialog: Boolean = false
     private val vm by viewModel<NewPlaylistViewModel>()
