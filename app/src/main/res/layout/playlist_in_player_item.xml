@@ -16,6 +16,7 @@
 
         <ImageView
             android:id="@+id/bottom_sheet_cover_playlist"
+            style="@style/background_style"
             android:layout_width="45dp"
             android:layout_height="45dp"
             android:scaleType="centerCrop"
