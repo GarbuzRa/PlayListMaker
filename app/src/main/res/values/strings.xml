@@ -50,4 +50,15 @@
     <string name="exit">Завершить</string>
     <string name="added_to_playlist">Добавлено в плейлист</string>
     <string name="track_is_already_in_playlist">Трек уже добавлен в плейлист</string>
+    <string name="playlist_no_tracks">В плейлист еще не добавлен ни один трек</string>
+    <string name="playlist_share">Поделиться плейлистом</string>
+    <string name="info_edit">Редактировать информацию</string>
+    <string name="playlist_delete">Удалить плейлист</string>
+    <string name="No">Нет</string>
+    <string name="Yes">Да</string>
+    <string name="isDeletePlaylist">Хотите удалить плейлист?</string>
+    <string name="noPlaylistToShare">В этом плейлисте нет треков, которыми можно поделиться</string>
+    <string name="isDeleteTrack">Хотите удалить трек?</string>
+    <string name="edit">Редактировать</string>
+    <string name="save">Сохранить</string>
 </resources>

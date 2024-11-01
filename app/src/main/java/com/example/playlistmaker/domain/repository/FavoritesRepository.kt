@@ -7,5 +7,5 @@ interface FavoritesRepository {
     suspend fun insertFavorite(track : Track)
     suspend fun deleteFavorite(track: Track)
     fun getFavorites() : Flow<List<Track>>
-    fun getFavoritesIds() : Flow<List<String>>
+    fun getFavoritesIds() : Flow<List<Int>>
 }

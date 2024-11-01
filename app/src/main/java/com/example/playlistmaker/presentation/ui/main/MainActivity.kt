@@ -1,6 +1,5 @@
 package com.example.playlistmaker.presentation.ui.main
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
@@ -11,7 +10,8 @@ import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.ActivityMainBinding
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
-class MainActivity : AppCompatActivity() {
+
+class MainActivity : AppCompatActivity(), BottomPanelController {
     lateinit var binding: ActivityMainBinding
     lateinit var navController: NavController
 
@@ -37,6 +37,18 @@ class MainActivity : AppCompatActivity() {
             navBar.visibility = View.GONE
         }
 
+    }
+
+    override fun disableBottomPanel() {
+        if (::binding.isInitialized) {
+            binding.bottomNavView.visibility = View.VISIBLE
+        }
+    }
+
+    override fun enableBottomPanel() {
+        if (::binding.isInitialized) {
+            binding.bottomNavView.visibility = View.GONE
+        }
     }
 
 }

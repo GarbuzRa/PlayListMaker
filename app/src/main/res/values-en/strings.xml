@@ -39,4 +39,15 @@
     <string name="exit">Exit</string>
     <string name="added_to_playlist">Added to playlist</string>
     <string name="track_is_already_in_playlist">Track is already in playlist</string>
+    <string name="playlist_no_tracks">No tracks in playlist</string>
+    <string name="playlist_share">Share Playlist</string>
+    <string name="info_edit">Edit information</string>
+    <string name="playlist_delete">Delete Playlist</string>
+    <string name="No">No</string>
+    <string name="Yes">Yes</string>
+    <string name="isDeletePlaylist">Are you sure you want to delete playlist?</string>
+    <string name="noPlaylistToShare">No tracks to share in this playlist</string>
+    <string name="isDeleteTrack">Are you sure you want to delete track?</string>
+    <string name="edit">Edit</string>
+    <string name="save">Save</string>
 </resources>

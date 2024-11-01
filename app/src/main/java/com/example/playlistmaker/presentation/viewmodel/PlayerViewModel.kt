@@ -69,12 +69,11 @@ class PlayerViewModel(
 
     fun onAddToPlaylistClick(playlist: PlayList, track: Track) {
         viewModelScope.launch {
-            playlist.trackCount = playlist.tracksId.size + 1
             playlistInteractor.insertTrackToPlaylist(playlist, track)
         }
     }
 
-    fun preparePlayer(trackId: String) {
+    fun preparePlayer(trackId: Int) {
         _currentTrack.value = getTrackUseCase(trackId)!!
         val track = _currentTrack.value
         if(track != null){
@@ -182,20 +181,5 @@ class PlayerViewModel(
         }
     }
 
-    fun addTrackToPlaylist(playlist: PlayList) {
-        viewModelScope.launch {
-            val track = _currentTrack.value ?: return@launch
-            try {
-                playlistInteractor.insertTrackToPlaylist(playlist, track)
-                _message.value = "Добавлено в плейлист ${playlist.name}"
-            } catch (e: Exception) {
-                if (e is IllegalStateException && e.message == "Track already exists in playlist") {
-                    _message.value = "Трек уже добавлен в плейлист ${playlist.name}"
-                } else {
-                    _message.value = "Ошибка при добавлении трека в плейлист"
-                }
-            }
-        }
-    }
 
 }

@@ -18,4 +18,16 @@ interface PlayListRepository {
     suspend fun getPlaylistById(id: Int): PlayList
 
     suspend fun saveImageToStorage(context: Context, uri: Uri): Uri?
+
+    suspend fun getAllTracks(tracksIds: List<Long>): List<Track>
+
+    suspend fun deleteTrackFromPlaylist(playlistId: Int, trackId: Long)
+
+    suspend fun updatePlaylist(playlist: PlayList)
+
+    suspend fun deletePlaylistById(id: Int)
+
+    suspend fun trackCountDecrement(playlistId: Int)
+
+    suspend fun modifyData(name: String, description: String, cover: String, coverUri: Uri?, originalPlayList: PlayList)
 }
