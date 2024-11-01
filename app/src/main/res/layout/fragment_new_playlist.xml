@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    style="@style/background_style"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    style="@style/background_style">
 
+    <!-- Fixed Top Panel -->
     <LinearLayout
         android:id="@+id/topPanel"
         android:layout_width="match_parent"
         android:layout_height="56dp"
         android:orientation="horizontal"
-        android:layout_margin="5dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        android:layout_margin="5dp">
 
         <Button
             android:id="@+id/backButton"
@@ -23,8 +23,6 @@
             app:iconSize="24dp"
             android:gravity="center"
             app:icon="@drawable/arrow_left"
-            app:layout_constraintStart_toEndOf="@id/guideline_left"
-            app:layout_constraintTop_toTopOf="parent"
             android:layout_marginTop="5dp"
             android:layout_marginStart="8dp"/>
 
@@ -42,91 +40,98 @@
             tools:ignore="RtlSymmetry" />
     </LinearLayout>
 
-
-
-    <androidx.cardview.widget.CardView
-        android:id="@+id/card_view_new_playlist"
-        style="@style/background_tint_style"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginTop="26dp"
-        app:cardCornerRadius="8dp"
-        android:layout_marginHorizontal="24dp"
-        app:cardElevation="0dp"
-        app:layout_constraintDimensionRatio="1:1"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/topPanel">
-
-        <ImageView
-            android:id="@+id/new_playlist_cover"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:contentDescription=""
-            android:scaleType="centerCrop"
-            android:src="@drawable/playlist_placeholder"/>
-    </androidx.cardview.widget.CardView>
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/new_playlist_name_txt_layout"
+    <!-- Scrollable Content -->
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="32dp"
-        android:layout_marginEnd="16dp"
-        android:hint="@string/name"
-        app:boxStrokeColor="@drawable/box_stroke"
-        app:hintTextColor="@color/yp_blue_light"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/card_view_new_playlist">
+        android:layout_height="match_parent"
+        android:fillViewport="true">
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/new_playlist_name_edit_txt"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="56dp" />
-    </com.google.android.material.textfield.TextInputLayout>
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="32dp">
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/new_playlist_description_txt_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="32dp"
-        android:layout_marginEnd="16dp"
-        android:hint="@string/description"
-        app:boxStrokeColor="@drawable/box_stroke"
-        app:hintTextColor="@color/yp_blue_light"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/new_playlist_name_txt_layout">
+            <!-- Card View -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/card_view_new_playlist"
+                style="@style/background_tint_style"
+                android:layout_width="match_parent"
+                android:layout_height="312dp"
+                android:layout_marginTop="26dp"
+                android:layout_marginHorizontal="24dp"
+                app:cardCornerRadius="8dp"
+                app:cardElevation="0dp"
+                android:layout_weight="1">
 
+                <ImageView
+                    android:id="@+id/new_playlist_cover"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/playlist_placeholder"/>
+            </androidx.cardview.widget.CardView>
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/new_playlist_description_edit_txt"
-            android:layout_width="match_parent"
-            android:layout_height="56dp" />
-    </com.google.android.material.textfield.TextInputLayout>
+            <!-- Name Input -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/new_playlist_name_txt_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="32dp"
+                android:layout_marginEnd="16dp"
+                android:hint="@string/name"
+                app:boxStrokeColor="@drawable/box_stroke"
+                app:hintTextColor="@color/yp_blue_light">
 
-    <Button
-        android:id="@+id/createButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="17dp"
-        android:layout_marginEnd="17dp"
-        android:layout_marginBottom="32dp"
-        android:backgroundTint="@color/yp_text_gray"
-        android:enabled="false"
-        android:padding="10dp"
-        android:text="@string/create"
-        android:textAllCaps="false"
-        android:textColor="@color/white"
-        android:textSize="16sp"
-        app:cornerRadius="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/new_playlist_name_edit_txt"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp" />
+            </com.google.android.material.textfield.TextInputLayout>
 
-    </Button>
+            <!-- Description Input -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/new_playlist_description_txt_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="32dp"
+                android:layout_marginEnd="16dp"
+                android:hint="@string/description"
+                app:boxStrokeColor="@drawable/box_stroke"
+                app:hintTextColor="@color/yp_blue_light">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/new_playlist_description_edit_txt"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Spacer to push content up when keyboard shows -->
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:minHeight="32dp"/>
+
+            <!-- Create Button -->
+            <Button
+                android:id="@+id/createButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="17dp"
+                android:layout_marginEnd="17dp"
+                android:layout_marginTop="32dp"
+                android:backgroundTint="@color/yp_text_gray"
+                android:enabled="false"
+                android:padding="10dp"
+                android:text="@string/create"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                app:cornerRadius="8dp"/>
+
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>
