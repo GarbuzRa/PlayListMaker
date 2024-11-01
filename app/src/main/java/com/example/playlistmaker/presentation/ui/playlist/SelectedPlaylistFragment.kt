@@ -207,9 +207,20 @@ class SelectedPlaylistFragment : Fragment() {
     }
 
     private fun renderDuration(time: Long) {
-        val duration = SimpleDateFormat("mm", Locale.getDefault()).format(time).toInt()
-        val formattedDuration =
-            resources.getQuantityString(R.plurals.minutes, duration, duration)
+        val totalMinutes = (time / (1000 * 60)).toInt()
+        val hours = totalMinutes / 60
+        val minutes = totalMinutes % 60
+
+        val formattedDuration = when {
+            hours > 0 -> {
+                val hoursString = resources.getQuantityString(R.plurals.hours, hours, hours)
+                val minutesString = resources.getQuantityString(R.plurals.minutes, minutes, minutes)
+                "$hoursString $minutesString"
+            }
+            else -> {
+                resources.getQuantityString(R.plurals.minutes, totalMinutes)
+            }
+        }
         binding.timeSelectedPlaylist.text = formattedDuration
     }
 
@@ -309,13 +320,6 @@ class SelectedPlaylistFragment : Fragment() {
             .setNegativeButton(getString(R.string.No)) { dialog, witch -> }
             .setPositiveButton(getString(R.string.Yes)) { dialog, witch ->
                 viewModel.deleteTrackFromPlaylist(playlist, trackId)
-                binding.trackAmountSelectedPlaylist.text =
-                    countTracks(viewModel.observePlaylistTracks().value?.size ?: 0)
-                val position = adapter.trackList.indexOfFirst { it.trackId?.toLong() == trackId }
-                if (position != -1) {
-                    adapter.trackList.removeAt(position)
-                    adapter.notifyItemRemoved(position)
-                }
             }
             .show()
     }

@@ -71,7 +71,7 @@ open class NewPlaylistFragment : Fragment() {
         }
 
         binding.newPlaylistNameEditTxt.doOnTextChanged { text, _, _, _ ->
-            if (text!!.isNotEmpty()) {
+            if (text!!.isNotBlank()) {
                 val color = ContextCompat.getColor(requireContext(), R.color.yp_blue)
                 showedDialog = true
                 binding.createButton.isEnabled = true

@@ -38,7 +38,7 @@ class SelectedPlaylistViewModel(private val playlistsInteractor: PlaylistInterac
         }
     }
 
-    fun getPlaylistById(playlistId: Int) {
+        fun getPlaylistById(playlistId: Int) {
         viewModelScope.launch {
             _playlistId.postValue(playlistsInteractor.getPlaylistById(playlistId))
         }

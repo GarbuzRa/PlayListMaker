@@ -116,8 +116,8 @@ class PlayListRepositoryImpl(private val database: PlayListsDatabase): PlayListR
 
             PlayList(
                 id = originalPlayList.id,
-                name = originalPlayList.name,
-                description = originalPlayList.description,
+                name = name,
+                description = description,
                 imageTitle = cover,
                 tracksId = originalPlayList.tracksId,
                 trackCount = originalPlayList.trackCount,
