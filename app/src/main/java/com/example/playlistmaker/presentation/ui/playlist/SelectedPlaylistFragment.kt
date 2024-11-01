@@ -1,6 +1,7 @@
 package com.example.playlistmaker.presentation.ui.playlist
 
 import android.content.Intent
+import android.graphics.Color
 import android.icu.text.SimpleDateFormat
 import android.net.Uri
 import android.os.Bundle
@@ -8,6 +9,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.navigation.fragment.findNavController
@@ -16,7 +18,6 @@ import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.FragmentSelectedPlaylistBinding
 import com.example.playlistmaker.domain.model.PlayList
 import com.example.playlistmaker.domain.model.Track
-import com.example.playlistmaker.presentation.ui.main.BottomPanelController
 import com.example.playlistmaker.presentation.ui.player.PlayerActivity
 import com.example.playlistmaker.presentation.ui.search.TrackAdapter
 import com.example.playlistmaker.presentation.viewmodel.SelectedPlaylistViewModel
@@ -31,9 +32,8 @@ class SelectedPlaylistFragment : Fragment() {
     private var _binding: FragmentSelectedPlaylistBinding? = null
     private val binding get() = _binding!!
     private val viewModel by viewModel<SelectedPlaylistViewModel>()
-    private lateinit var playlist: PlayList
-    private lateinit var callback: OnBackPressedCallback
     private val adapter = TrackAdapter(mutableListOf())
+    private var currentPlaylistId: Int = -1
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -46,40 +46,52 @@ class SelectedPlaylistFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        playlist = (arguments?.getParcelable("selected_playlist") as? PlayList)!!
 
-        adapter.clickListener= {
-            openAudioPlayer(it)
-        }
-        adapter.longClickListener = {
-            showDialog(playlist, it.trackId?.toLong() ?: 0)
-        }
+        // Извлечение ID плейлиста из аргументов
+        currentPlaylistId = arguments?.getParcelable<PlayList>("selected_playlist")?.id ?: -1
 
-        (activity as? BottomPanelController)?.enableBottomPanel()
+        setupAdapters()
+        setupBottomSheetBehaviors()
+        setupObservers()
+        setupClickListeners()
 
+        // Загрузка плейлиста
+        viewModel.loadPlaylist(currentPlaylistId)
+    }
+
+    private fun setupAdapters() {
+        adapter.clickListener = { openAudioPlayer(it) }
+        adapter.longClickListener = { showDialog(it.trackId?.toLong() ?: 0) }
         binding.rvSelectedPlaylist.adapter = adapter
+    }
 
-        showSelectedPlaylist()
-
-        val playlistId = playlist.id
+    private fun setupBottomSheetBehaviors() {
         val screenHeight = resources.displayMetrics.heightPixels
         val allowableHeight = (screenHeight * 0.25).toInt()
+
         val bottomSheetBehavior =
             BottomSheetBehavior.from(binding.bottomMenuSelectedPlaylist).apply {
                 state = BottomSheetBehavior.STATE_HIDDEN
             }
+
         val bottomSheetBehaviorPlaylist =
             BottomSheetBehavior.from(binding.playlistBottomMenuTracks).apply {
                 state = BottomSheetBehavior.STATE_COLLAPSED
+                peekHeight = allowableHeight
             }
 
-        bottomSheetBehaviorPlaylist.peekHeight = allowableHeight
+        setupBottomSheetCallbacks(bottomSheetBehavior, bottomSheetBehaviorPlaylist)
+    }
 
+    private fun setupBottomSheetCallbacks(
+        bottomSheetBehavior: BottomSheetBehavior<LinearLayout>,
+        bottomSheetBehaviorPlaylist: BottomSheetBehavior<LinearLayout>
+    ) {
         bottomSheetBehavior.addBottomSheetCallback(object :
             BottomSheetBehavior.BottomSheetCallback() {
             override fun onStateChanged(bottomSheet: View, newState: Int) {
                 when (newState) {
-                    BottomSheetBehavior.STATE_HIDDEN -> {
+                    BottomSheetBehavior.STATE_COLLAPSED -> {
                         bottomSheetBehaviorPlaylist.isHideable = false
                         binding.menuBottomSheetOverlay.visibility = View.GONE
                     }
@@ -88,23 +100,36 @@ class SelectedPlaylistFragment : Fragment() {
                     }
                 }
             }
-
-            override fun onSlide(bottomSheet: View, slideOffset: Float) {}
+            override fun onSlide(bottomSheet: View, slideOffset: Float) {
+                binding.menuBottomSheetOverlay.alpha = slideOffset
+            }
         })
+    }
 
-        val bundle = Bundle().apply {
-            putParcelable("modify_playlist", playlist)
-        }
-        binding.editMenuSelectedPlaylist.setOnClickListener {
-            findNavController().navigate(
-                R.id.action_selectedPlaylistFragment_to_modifyPlaylistFragment,
-                bundle
-            )
+    private fun setupObservers() {
+        viewModel.playlist.observe(viewLifecycleOwner) { playlist ->
+            showSelectedPlaylist(playlist)
         }
 
+        viewModel.playlistTracks.observe(viewLifecycleOwner) { tracks ->
+            showContent(tracks)
+            checkTracks(tracks.size)
+        }
+
+        viewModel.trackCount.observe(viewLifecycleOwner) { trackCount ->
+            binding.trackAmountSelectedPlaylist.text = countTracks(trackCount)
+        }
+
+        viewModel.playlistTime.observe(viewLifecycleOwner) { time ->
+            renderDuration(time)
+        }
+    }
+
+    private fun setupClickListeners() {
         binding.toolbarSelectedPlaylist.setNavigationOnClickListener {
             findNavController().navigateUp()
         }
+
         val callback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 findNavController().navigateUp()
@@ -112,98 +137,50 @@ class SelectedPlaylistFragment : Fragment() {
         }
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
 
-        binding.shareSelectedPlaylist.setOnClickListener {
-            toShare()
+        binding.editMenuSelectedPlaylist.setOnClickListener {
+            val bundle = Bundle().apply {
+                putParcelable("modify_playlist", viewModel.playlist.value)
+            }
+            findNavController().navigate(
+                R.id.action_selectedPlaylistFragment_to_modifyPlaylistFragment,
+                bundle
+            )
         }
 
+        binding.shareSelectedPlaylist.setOnClickListener { toShare() }
         binding.shareMenuSelectedPlaylist.setOnClickListener {
-            bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+            binding.bottomMenuSelectedPlaylist.visibility = View.GONE
             toShare()
         }
 
         binding.deleteMenuSelectedPlaylist.setOnClickListener {
-            bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+            binding.bottomMenuSelectedPlaylist.visibility = View.GONE
             toDelete()
         }
 
         binding.menuDotsSelectedPlaylist.setOnClickListener {
-            binding.bottomMenuSelectedPlaylist.visibility = View.VISIBLE
-            binding.titleBottomSelectedPlaylist.text = playlist.name
-            binding.trackAmountBottomSelectedPlaylist.text = countTracks(playlist.trackCount)
-            binding.menuBottomSheetOverlay.visibility = View.VISIBLE
-
-            bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+            showBottomMenu()
         }
 
-        bottomSheetBehavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
-            override fun onStateChanged(bottomSheet: View, newState: Int) {
-                when (newState) {
-                    BottomSheetBehavior.STATE_HIDDEN -> {
-                        binding.menuBottomSheetOverlay.visibility = View.GONE
-                    }
-                    BottomSheetBehavior.STATE_EXPANDED -> {
-                        binding.menuBottomSheetOverlay.visibility = View.VISIBLE
-                    }
-                }
-            }
-
-            override fun onSlide(bottomSheet: View, slideOffset: Float) {
-                binding.menuBottomSheetOverlay.alpha = slideOffset
-            }
-        })
-
-        binding.menuBottomSheetOverlay.setOnClickListener{
-            bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
-        }
-
-        viewModel.getPlaylistById(playlistId)
-
-        viewModel.observeTrackCount().observe(viewLifecycleOwner) { trackCount ->
-            binding.trackAmountSelectedPlaylist.text = countTracks(trackCount)
-            checkTracks()
-        }
-
-        viewModel.observePlaylistAllTime().observe(viewLifecycleOwner) {
-            viewModel.playlistAllTime()
-            if (it != null) {
-                renderDuration(it)
-            }
-        }
-
-        viewModel.observePlaylistId().observe(viewLifecycleOwner) {
-            playlist = it
-            viewModel.playlistAllTime()
-            viewModel.getAllTracks(playlist.tracksId)
-        }
-
-        viewModel.observePlaylistTracks().observe(viewLifecycleOwner) {
-            if (it != null) {
-                showContent(it)
-                viewModel.playlistAllTime()
-            }
+        binding.menuBottomSheetOverlay.setOnClickListener {
+            binding.bottomMenuSelectedPlaylist.visibility = View.GONE
         }
     }
 
-    fun checkTracks(){
-        if (playlist.trackCount == 0) {
-            binding.noTracksInPlaylist.visibility = View.VISIBLE
-        } else {
-            binding.noTracksInPlaylist.visibility = View.GONE
-        }
+    private fun showBottomMenu() {
+        val playlist = viewModel.playlist.value ?: return
+        binding.bottomMenuSelectedPlaylist.visibility = View.VISIBLE
+        binding.titleBottomSelectedPlaylist.text = playlist.name
+        binding.trackAmountBottomSelectedPlaylist.text = countTracks(playlist.trackCount)
+        binding.menuBottomSheetOverlay.visibility = View.VISIBLE
+
+        val bottomSheetBehavior = BottomSheetBehavior.from(binding.bottomMenuSelectedPlaylist)
+        bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
     }
 
-    override fun onResume() {
-        super.onResume()
-        checkTracks()
-
-        val playlistId = playlist.id
-        viewModel.getPlaylistById(playlistId)
-        viewModel.observePlaylistId().observe(viewLifecycleOwner) {
-            playlist = it
-            viewModel.getAllTracks(playlist.tracksId)
-            viewModel.playlistAllTime()
-            showSelectedPlaylist()
-        }
+    private fun checkTracks(trackCount: Int) {
+        binding.noTracksInPlaylist.visibility =
+            if (trackCount == 0) View.VISIBLE else View.GONE
     }
 
     private fun renderDuration(time: Long) {
@@ -218,7 +195,7 @@ class SelectedPlaylistFragment : Fragment() {
                 "$hoursString $minutesString"
             }
             else -> {
-                resources.getQuantityString(R.plurals.minutes, totalMinutes)
+                resources.getQuantityString(R.plurals.minutes, totalMinutes, totalMinutes)
             }
         }
         binding.timeSelectedPlaylist.text = formattedDuration
@@ -227,16 +204,15 @@ class SelectedPlaylistFragment : Fragment() {
     private fun toDelete() {
         MaterialAlertDialogBuilder(requireContext(), R.style.dialog)
             .setMessage(getString(R.string.isDeletePlaylist))
-            .setNegativeButton(getString(R.string.No)) { dialog, witch -> }
-            .setPositiveButton(getString(R.string.Yes)) { dialog, witch ->
+            .setNegativeButton(getString(R.string.No)) { _, _ -> }
+            .setPositiveButton(getString(R.string.Yes)) { _, _ ->
                 viewModel.deletePlaylist()
                 findNavController().navigateUp()
             }.show()
-        checkTracks()
     }
 
     private fun toShare() {
-        val tracks = viewModel.observePlaylistTracks().value ?: emptyList()
+        val tracks = viewModel.playlistTracks.value ?: emptyList()
         if (tracks.isEmpty()) {
             Toast.makeText(
                 requireContext(),
@@ -245,7 +221,7 @@ class SelectedPlaylistFragment : Fragment() {
             ).show()
             return
         }
-        val message = formMessage()
+        val message = formMessage(tracks)
         val intent = Intent().apply {
             action = Intent.ACTION_SEND
             putExtra(Intent.EXTRA_TEXT, message)
@@ -254,10 +230,10 @@ class SelectedPlaylistFragment : Fragment() {
         startActivity(Intent.createChooser(intent, null))
     }
 
-    private fun formMessage(): String {
+    private fun formMessage(tracks: List<Track>): String {
+        val playlist = viewModel.playlist.value ?: return ""
         val name = playlist.name
         val descript = playlist.description
-        val tracks = viewModel.observePlaylistTracks().value ?: emptyList()
         val stringBuilder = StringBuilder()
         with(stringBuilder) {
             append("$name\n")
@@ -277,7 +253,7 @@ class SelectedPlaylistFragment : Fragment() {
         return stringBuilder.toString()
     }
 
-    private fun showSelectedPlaylist() {
+    private fun showSelectedPlaylist(playlist: PlayList) {
         binding.trackAmountSelectedPlaylist.text = countTracks(playlist.trackCount)
         binding.titleSelectedPlaylist.text = playlist.name
         binding.descriptionTextviewSelectedPlaylist.text = playlist.description
@@ -299,7 +275,6 @@ class SelectedPlaylistFragment : Fragment() {
     private fun countTracks(count: Int): String {
         val countTrack = context?.resources?.getQuantityString(R.plurals.count_tracks, count)
         return "$count $countTrack"
-
     }
 
     private fun showContent(tracks: List<Track>) {
@@ -314,12 +289,12 @@ class SelectedPlaylistFragment : Fragment() {
         startActivity(intent)
     }
 
-    private fun showDialog(playlist: PlayList, trackId: Long) {
+    private fun showDialog(trackId: Long) {
         MaterialAlertDialogBuilder(requireContext(), R.style.dialog)
             .setMessage(getString(R.string.isDeleteTrack))
-            .setNegativeButton(getString(R.string.No)) { dialog, witch -> }
-            .setPositiveButton(getString(R.string.Yes)) { dialog, witch ->
-                viewModel.deleteTrackFromPlaylist(playlist, trackId)
+            .setNegativeButton(getString(R.string.No)) { _, _ -> }
+            .setPositiveButton(getString(R.string.Yes)) { _, _ ->
+                viewModel.deleteTrackFromPlaylist(trackId)
             }
             .show()
     }
@@ -327,8 +302,5 @@ class SelectedPlaylistFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-        if (::callback.isInitialized) {
-            callback.remove()
-        }
     }
 }
