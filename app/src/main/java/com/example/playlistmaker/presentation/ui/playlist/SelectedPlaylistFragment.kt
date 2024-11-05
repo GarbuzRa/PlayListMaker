@@ -18,6 +18,7 @@ import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.FragmentSelectedPlaylistBinding
 import com.example.playlistmaker.domain.model.PlayList
 import com.example.playlistmaker.domain.model.Track
+import com.example.playlistmaker.presentation.ui.main.MainActivity
 import com.example.playlistmaker.presentation.ui.player.PlayerActivity
 import com.example.playlistmaker.presentation.ui.search.TrackAdapter
 import com.example.playlistmaker.presentation.viewmodel.SelectedPlaylistViewModel
@@ -57,6 +58,7 @@ class SelectedPlaylistFragment : Fragment() {
 
         // Загрузка плейлиста
         viewModel.loadPlaylist(currentPlaylistId)
+        (activity as? MainActivity)?.setNavBarVis(false)
     }
 
     private fun setupAdapters() {

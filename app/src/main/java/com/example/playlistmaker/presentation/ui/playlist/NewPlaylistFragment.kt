@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.addCallback
@@ -28,6 +29,16 @@ open class NewPlaylistFragment : Fragment() {
     private var showedDialog: Boolean = false
     private val vm by viewModel<NewPlaylistViewModel>()
     private lateinit var callback: OnBackPressedCallback
+
+    override fun onResume(){
+        super.onResume()
+        requireActivity().window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        requireActivity().window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,

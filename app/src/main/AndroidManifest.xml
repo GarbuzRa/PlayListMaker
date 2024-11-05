@@ -19,7 +19,7 @@
             android:name=".presentation.ui.player.PlayerActivity"
             android:exported="false" />
         <activity
-            android:windowSoftInputMode="adjustResize"
+            android:windowSoftInputMode="adjustNothing"
             android:name=".presentation.ui.main.MainActivity"
             android:exported="true">
             <intent-filter>
