@@ -7,9 +7,10 @@ import com.example.playlistmaker.R
 import com.example.playlistmaker.domain.model.Track
 
 
-class TrackAdapter(var trackList: MutableList<Track>, var clickListener: (Track) -> Unit) :
+class TrackAdapter(var trackList: MutableList<Track>, var clickListener: (Track) -> Unit = {}) :
 //принимает в себя trackList изменяемых листов из треков (дата класс) и ф-ию  clickListener, которая тоже принимает в себя треки
     RecyclerView.Adapter<TrackViewHolder>() {
+        var longClickListener: (Track) -> Unit = {}
     fun updateList(trackList: MutableList<Track>) { //ф-ия обновить плейлист
         this.trackList = trackList //этот треклист (который в аргументах как я понял) становится трекЛистом
         notifyDataSetChanged() //передаем ин-фу о обновлении
@@ -32,6 +33,10 @@ class TrackAdapter(var trackList: MutableList<Track>, var clickListener: (Track)
         holder.bind(trackList[position]) //привязываем к холдеру элемент массива по позиции
         holder.itemView.setOnClickListener {//при нажатии на весь трек происходит..
             clickListener(trackList[position]) //вызывает ф-ию по ссылке
+        }
+        holder.itemView.setOnLongClickListener{ // при долгом нажатии на трек
+            longClickListener.invoke(trackList[position]) // происходит вызов второй функции
+            true
         }
     }
 

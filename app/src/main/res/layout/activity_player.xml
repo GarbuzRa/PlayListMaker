@@ -286,7 +286,7 @@
             android:layout_height="4dp"
             android:layout_gravity="center"
             android:layout_marginTop="10dp"
-            android:background="@drawable/bottom_sheet_stroke" />
+            android:background="@drawable/bottom_sheet_line" />
 
         <TextView
             style="@style/bottom_sheet_error_text"

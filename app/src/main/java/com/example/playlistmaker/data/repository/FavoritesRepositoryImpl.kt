@@ -25,7 +25,7 @@ class FavoritesRepositoryImpl(val appDataBase: AppDatabase) : FavoritesRepositor
             list.map { it.toTrack() }
         }.map { it.reversed() }
     }
-    override fun getFavoritesIds() : Flow<List<String>> {
+    override fun getFavoritesIds() : Flow<List<Int>> {
         return appDataBase.favoritesDao().getFavoriteTracksIds()
     }
 

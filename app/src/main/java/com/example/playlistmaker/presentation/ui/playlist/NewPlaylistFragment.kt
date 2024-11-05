@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.addCallback
@@ -21,13 +22,23 @@ import com.example.playlistmaker.presentation.viewmodel.NewPlaylistViewModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class NewPlaylistFragment : Fragment() {
+open class NewPlaylistFragment : Fragment() {
     private var _binding: FragmentNewPlaylistBinding? = null
-    private val binding get() = _binding!!
+    val binding get() = _binding!!
     private var coverUriSelect: Uri? = null
     private var showedDialog: Boolean = false
     private val vm by viewModel<NewPlaylistViewModel>()
     private lateinit var callback: OnBackPressedCallback
+
+    override fun onResume(){
+        super.onResume()
+        requireActivity().window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        requireActivity().window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -71,7 +82,7 @@ class NewPlaylistFragment : Fragment() {
         }
 
         binding.newPlaylistNameEditTxt.doOnTextChanged { text, _, _, _ ->
-            if (text!!.isNotEmpty()) {
+            if (text!!.isNotBlank()) {
                 val color = ContextCompat.getColor(requireContext(), R.color.yp_blue)
                 showedDialog = true
                 binding.createButton.isEnabled = true

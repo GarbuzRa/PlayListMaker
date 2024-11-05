@@ -13,7 +13,7 @@ import kotlinx.coroutines.launch
 import java.net.URI
 import java.util.UUID
 
-class NewPlaylistViewModel(val interactor: PlaylistInteractor): ViewModel() {
+open class NewPlaylistViewModel(val interactor: PlaylistInteractor): ViewModel() {
     val _savedCoverUri = MutableLiveData<Uri?>() //Следит за ссылкой на картинку
     val savedCoverUri: LiveData<Uri?> = _savedCoverUri
 
